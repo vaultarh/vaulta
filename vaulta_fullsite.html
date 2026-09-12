@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vaulta — Autonomous Yield Infrastructure on Robinhood Chain</title>
+  <meta name="description" content="Deposit USDG. Receive $vsUSD — a yield-bearing stablecoin that allocates autonomously across lending, real-world assets, perp funding, and x402 agentic flows on Robinhood Chain."/>
+  <meta property="og:title" content="Vaulta — Autonomous Yield Infrastructure"/>
+  <meta property="og:description" content="Non-custodial. Audited. AI-powered yield on Robinhood Chain."/>
+  <meta property="og:image" content="https://www.vaulta.works/og-image.png"/>
+  <link rel="icon" href="https://www.vaulta.works/logo.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0c0f;
+      --bg2: #0f1217;
+      --bg3: #151a22;
+      --border: rgba(255,255,255,0.07);
+      --border-glow: rgba(20,255,180,0.25);
+      --green: #14ffb4;
+      --green-dim: rgba(20,255,180,0.12);
+      --green-mid: rgba(20,255,180,0.35);
+      --white: #f0f4f8;
+      --muted: #6b7685;
+      --text: #c8d4e0;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --radius: 12px;
+      --radius-lg: 20px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(10,12,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 15px; font-weight: 700;
+      color: var(--white); text-decoration: none; letter-spacing: 0.05em;
+    }
+    .nav-logo img { width: 28px; height: 28px; }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      text-decoration: none; letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-right { display: flex; align-items: center; gap: 14px; }
+    .badge-live {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+      color: var(--green); background: var(--green-dim);
+      border: 1px solid var(--border-glow);
+      padding: 5px 10px; border-radius: 4px;
+    }
+    .badge-live::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--green); border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(20,255,180,0.4); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(20,255,180,0); }
+    }
+    .btn-primary {
+      background: var(--green); color: #000;
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em; border: none; cursor: pointer;
+      padding: 10px 20px; border-radius: 6px;
+      transition: opacity 0.2s, transform 0.15s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent; color: var(--white);
+      font-family: var(--mono); font-size: 12px; font-weight: 700;
+      letter-spacing: 0.08em;
+      border: 1px solid var(--border); cursor: pointer;
+      padding: 10px 20px; border-radius: 6px;
+      transition: border-color 0.2s, color 0.2s;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      overflow: hidden; white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      margin-top: 65px;
+    }
+    .ticker-inner {
+      display: inline-flex; gap: 0;
+      animation: ticker 40s linear infinite;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .ticker-item {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 32px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+      border-right: 1px solid var(--border);
+    }
+    .ticker-item .label { color: var(--muted); }
+    .ticker-item .val { color: var(--white); }
+    .ticker-item .pos { color: var(--green); }
+    .ticker-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 90vh;
+      display: flex; align-items: center;
+      padding: 80px 48px 60px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 70% 40%, rgba(20,255,180,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(20,255,180,0.03) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 30%, transparent 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 620px;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+      color: var(--green); margin-bottom: 28px;
+      border: 1px solid var(--border-glow); background: var(--green-dim);
+      padding: 6px 12px; border-radius: 4px;
+    }
+    .hero h1 {
+      font-family: var(--mono); font-size: clamp(36px, 5vw, 60px);
+      font-weight: 700; line-height: 1.1;
+      color: var(--white); letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .hero h1 span { color: var(--green); }
+    .hero p {
+      font-size: 17px; color: var(--text); line-height: 1.7;
+      max-width: 520px; margin-bottom: 36px;
+    }
+    .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+    .hero-stats {
+      display: flex; gap: 32px; flex-wrap: wrap;
+      padding-top: 32px; border-top: 1px solid var(--border);
+    }
+    .hero-stat { }
+    .hero-stat .num {
+      font-family: var(--mono); font-size: 22px; font-weight: 700;
+      color: var(--white); display: block;
+    }
+    .hero-stat .desc { font-size: 12px; color: var(--muted); letter-spacing: 0.05em; }
+
+    /* ── TERMINAL ── */
+    .hero-terminal {
+      position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+      z-index: 1; width: 380px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
+    }
+    .term-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 16px; background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+    .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .term-dot.red { background: #ff5f57; }
+    .term-dot.yellow { background: #febc2e; }
+    .term-dot.green { background: #28c840; }
+    .term-title { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-left: 6px; letter-spacing: 0.08em; }
+    .term-body { padding: 20px; font-family: var(--mono); font-size: 12px; line-height: 2; }
+    .term-line { display: flex; justify-content: space-between; }
+    .term-key { color: var(--muted); }
+    .term-val { color: var(--green); }
+    .term-val.white { color: var(--white); }
+    .term-prompt { color: var(--muted); margin-top: 8px; }
+    .term-cmd { color: var(--white); }
+    .term-cursor { display: inline-block; width: 8px; height: 14px; background: var(--green); animation: blink 1s infinite; vertical-align: middle; }
+    @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+
+    /* ── SECTION BASE ── */
+    section { padding: 96px 48px; max-width: 1200px; margin: 0 auto; }
+    .section-tag {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+      color: var(--green); margin-bottom: 14px; display: block;
+    }
+    h2 {
+      font-family: var(--mono); font-size: clamp(26px, 3.5vw, 42px);
+      font-weight: 700; color: var(--white); line-height: 1.15;
+      letter-spacing: -0.02em; margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 16px; color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 60px;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+    .step {
+      background: var(--bg2); padding: 32px 28px;
+      border: 1px solid var(--border); position: relative;
+      transition: border-color 0.2s;
+    }
+    .step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+    .step:hover { border-color: var(--border-glow); }
+    .step-num {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+      color: var(--green); margin-bottom: 20px; display: block;
+    }
+    .step h3 { font-family: var(--mono); font-size: 14px; color: var(--white); margin-bottom: 12px; letter-spacing: 0.05em; }
+    .step p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    /* ── VAULTS ── */
+    .vaults { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .vault-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 36px 32px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .vault-card:hover { border-color: var(--border-glow); transform: translateY(-3px); }
+    .vault-card.featured { border-color: rgba(20,255,180,0.3); }
+    .vault-card.featured::before {
+      content: 'MOST POPULAR';
+      position: absolute; top: 0; right: 0;
+      background: var(--green); color: #000;
+      font-family: var(--mono); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.1em; padding: 5px 12px;
+      border-radius: 0 var(--radius-lg) 0 var(--radius);
+    }
+    .vault-risk {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em;
+      color: var(--muted); margin-bottom: 12px;
+    }
+    .vault-name {
+      font-family: var(--mono); font-size: 18px; font-weight: 700;
+      color: var(--white); margin-bottom: 8px;
+    }
+    .vault-apy {
+      font-family: var(--mono); font-size: 42px; font-weight: 700;
+      color: var(--green); line-height: 1; margin-bottom: 4px;
+    }
+    .vault-apy-label { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    .vault-desc { font-size: 13px; color: var(--text); line-height: 1.65; margin-bottom: 28px; flex: 1; }
+    .vault-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .vault-tag {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+      color: var(--muted); background: var(--bg3);
+      border: 1px solid var(--border); padding: 4px 10px; border-radius: 4px;
+    }
+    .vault-bar { margin-bottom: 24px; }
+    .vault-bar-label {
+      display: flex; justify-content: space-between;
+      font-family: var(--mono); font-size: 10px; color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .vault-bar-track {
+      height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden;
+    }
+    .vault-bar-fill { height: 100%; background: var(--green); border-radius: 2px; }
+
+    /* ── AI ENGINE ── */
+    .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .ai-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px;
+      transition: border-color 0.2s;
+    }
+    .ai-card:hover { border-color: var(--border-glow); }
+    .ai-card-icon {
+      width: 40px; height: 40px; background: var(--green-dim);
+      border: 1px solid var(--border-glow); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-bottom: 20px;
+    }
+    .ai-card h3 { font-family: var(--mono); font-size: 14px; color: var(--white); margin-bottom: 10px; letter-spacing: 0.04em; }
+    .ai-card p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    /* ── TEAM ── */
+    .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .team-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px 24px;
+    }
+    .team-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--bg3); border: 1px solid var(--border-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 16px; color: var(--green);
+      margin-bottom: 16px;
+    }
+    .team-name { font-family: var(--mono); font-size: 14px; color: var(--white); margin-bottom: 4px; }
+    .team-role { font-size: 12px; color: var(--green); margin-bottom: 12px; letter-spacing: 0.04em; }
+    .team-bio { font-size: 12px; color: var(--muted); line-height: 1.65; }
+    .team-links { display: flex; gap: 10px; margin-top: 16px; }
+    .team-link {
+      font-family: var(--mono); font-size: 10px; color: var(--muted);
+      text-decoration: none; border: 1px solid var(--border);
+      padding: 4px 10px; border-radius: 4px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .team-link:hover { color: var(--green); border-color: var(--border-glow); }
+
+    /* ── SECURITY ── */
+    .security-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .sec-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 20px; text-align: center;
+    }
+    .sec-icon { font-size: 24px; margin-bottom: 12px; display: block; }
+    .sec-label { font-family: var(--mono); font-size: 12px; color: var(--white); margin-bottom: 6px; letter-spacing: 0.05em; }
+    .sec-val { font-size: 12px; color: var(--muted); }
+
+    /* ── AUDIT BANNER ── */
+    .audit-banner {
+      background: var(--bg2); border: 1px solid var(--border-glow);
+      border-radius: var(--radius-lg); padding: 32px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .audit-banner-left h3 { font-family: var(--mono); font-size: 16px; color: var(--white); margin-bottom: 6px; }
+    .audit-banner-left p { font-size: 13px; color: var(--muted); }
+    .audit-status {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 12px;
+    }
+
+    /* ── ROADMAP ── */
+    .roadmap { display: flex; gap: 20px; }
+    .rm-card {
+      flex: 1; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 32px 28px;
+      position: relative;
+    }
+    .rm-card.active { border-color: var(--border-glow); }
+    .rm-phase {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .rm-title { font-family: var(--mono); font-size: 16px; color: var(--white); margin-bottom: 6px; }
+    .rm-date { font-size: 12px; color: var(--green); margin-bottom: 20px; }
+    .rm-items { list-style: none; }
+    .rm-items li {
+      font-size: 13px; color: var(--muted); padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .rm-items li::before { content: '→'; color: var(--green); flex-shrink: 0; font-size: 11px; margin-top: 2px; }
+    .rm-status {
+      display: inline-block; margin-top: 20px;
+      font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+      color: var(--green); background: var(--green-dim);
+      border: 1px solid var(--border-glow); padding: 5px 12px; border-radius: 4px;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center; padding: 96px 48px;
+      position: relative; overflow: hidden;
+    }
+    .cta-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(20,255,180,0.06) 0%, transparent 70%);
+    }
+    .cta-section h2 { position: relative; z-index: 1; font-size: clamp(28px, 4vw, 52px); margin-bottom: 16px; }
+    .cta-section p { position: relative; z-index: 1; font-size: 16px; color: var(--muted); margin-bottom: 36px; }
+    .cta-btns { position: relative; z-index: 1; display: flex; gap: 14px; justify-content: center; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 48px 32px;
+      display: flex; flex-direction: column; gap: 32px;
+    }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .footer-brand { max-width: 280px; }
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 14px; font-weight: 700;
+      color: var(--white); margin-bottom: 12px; text-decoration: none;
+    }
+    .footer-logo img { width: 24px; }
+    .footer-brand p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+    .footer-cols { display: flex; gap: 64px; }
+    .footer-col h4 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 16px; }
+    .footer-col a {
+      display: block; font-size: 13px; color: var(--text);
+      text-decoration: none; margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--green); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 24px; border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em;
+    }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { color: var(--muted); text-decoration: none; }
+    .footer-legal a:hover { color: var(--white); }
+
+    /* ── WALLET MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); width: 440px; overflow: hidden;
+      transform: translateY(20px); transition: transform 0.25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-family: var(--mono); font-size: 14px; color: var(--white); }
+    .modal-close {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 20px; line-height: 1; padding: 0; transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--white); }
+    .modal-body { padding: 24px; }
+    .wallet-option {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 10px; cursor: pointer;
+      background: var(--bg3); transition: border-color 0.2s;
+    }
+    .wallet-option:hover { border-color: var(--border-glow); }
+    .wallet-icon { font-size: 22px; width: 32px; text-align: center; }
+    .wallet-name { font-family: var(--mono); font-size: 13px; color: var(--white); }
+    .wallet-desc { font-size: 11px; color: var(--muted); }
+    .modal-note {
+      margin-top: 16px; font-size: 11px; color: var(--muted); text-align: center;
+      line-height: 1.5;
+    }
+    .modal-note a { color: var(--green); text-decoration: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .hero-terminal { display: none; }
+      .vaults { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+      .security-grid { grid-template-columns: 1fr 1fr; }
+      .roadmap { flex-direction: column; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 48px 20px; }
+      section { padding: 64px 20px; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .ai-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .security-grid { grid-template-columns: 1fr 1fr; }
+      .audit-banner { flex-direction: column; gap: 20px; }
+      footer { padding: 40px 20px 24px; }
+      .footer-top { flex-direction: column; gap: 32px; }
+      .footer-cols { gap: 32px; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     NAVIGATION
+══════════════════════════════ -->
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="https://www.vaulta.works/logo.png" alt="Vaulta"/>
+    VAULTA
+  </a>
+  <div class="nav-links">
+    <a href="#how">Protocol</a>
+    <a href="#vaults">Vaults</a>
+    <a href="#ai">AI Engine</a>
+    <a href="#security">Security</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="https://www.vaulta.works/docs" target="_blank">Docs</a>
+  </div>
+  <div class="nav-right">
+    <div class="badge-live">MAINNET · ROBINHOOD CHAIN</div>
+    <button class="btn-primary" onclick="openWallet()">CONNECT WALLET</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════
+     TICKER
+══════════════════════════════ -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker">
+    <!-- Items duplicated in JS -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     HERO
+══════════════════════════════ -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span>▲</span> Autonomous Yield · Robinhood Chain · Audited by OtterSec
+    </div>
+    <h1>YOUR CAPITAL<br/><span>NEVER SLEEPS</span></h1>
+    <p>
+      Deposit USDG. Receive <strong>$vsUSD</strong> — a yield-bearing stablecoin that allocates autonomously across lending, real-world assets, perp funding, and x402 agentic flows. Non-custodial. No lock-ups.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="openWallet()">LAUNCH APP →</button>
+      <a href="#how" class="btn-outline">HOW IT WORKS</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="num" id="stat-tvl">$2.14M</span>
+        <span class="desc">TOTAL VALUE LOCKED</span>
+      </div>
+      <div class="hero-stat">
+        <span class="num" id="stat-holders">3,104</span>
+        <span class="desc">$vsUSD HOLDERS</span>
+      </div>
+      <div class="hero-stat">
+        <span class="num" id="stat-rebalances">1,847</span>
+        <span class="desc">AI REBALANCES TODAY</span>
+      </div>
+      <div class="hero-stat">
+        <span class="num">33.4%</span>
+        <span class="desc">MAX APY (ALPHA VAULT)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live terminal -->
+  <div class="hero-terminal">
+    <div class="term-header">
+      <div class="term-dot red"></div>
+      <div class="term-dot yellow"></div>
+      <div class="term-dot green"></div>
+      <span class="term-title">vaulta_ai_optimizer.live · robinhood-4663</span>
+    </div>
+    <div class="term-body">
+      <div class="term-line"><span class="term-prompt">$</span> <span class="term-cmd">vaulta status --realtime</span></div>
+      <br/>
+      <div class="term-line"><span class="term-key">stable_vault.apy&nbsp;&nbsp;&nbsp;</span><span class="term-val">11.2%</span></div>
+      <div class="term-line"><span class="term-key">boost_vault.apy&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="term-val">18.7%</span></div>
+      <div class="term-line"><span class="term-key">alpha_vault.apy&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="term-val">33.4%</span></div>
+      <div class="term-line"><span class="term-key">ai_rebalances&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="term-val" id="term-rebal">1,847</span></div>
+      <div class="term-line"><span class="term-key">morpho.tvl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="term-val">$4.1M</span></div>
+      <div class="term-line"><span class="term-key">x402.flows_24h&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="term-val">218</span></div>
+      <div class="term-line"><span class="term-key">network&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="term-val white">robinhood-4663</span></div>
+      <div class="term-line"><span class="term-key">last_rebalance&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="term-val" id="term-time">4s ago</span></div>
+      <br/>
+      <div class="term-line"><span class="term-prompt">$</span> <span class="term-cursor"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     HOW IT WORKS
+══════════════════════════════ -->
+<section id="how">
+  <span class="section-tag">// PROTOCOL FLOW</span>
+  <h2>HOW IT WORKS</h2>
+  <p class="section-sub">Four steps. Zero manual effort after deposit. Your capital routes autonomously 24/7.</p>
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">01 — DEPOSIT</span>
+      <h3>TRANSFER USDG</h3>
+      <p>Connect your wallet and deposit any amount of USDG. Non-custodial. No KYC. No minimum deposit required.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">02 — MINT</span>
+      <h3>RECEIVE $vsUSD</h3>
+      <p>You receive yield-bearing $vsUSD 1:1 for your USDG. Fully composable across Robinhood Chain DeFi. Redeemable anytime.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">03 — AI ROUTES</span>
+      <h3>CAPITAL DEPLOYED</h3>
+      <p>The AI optimizer evaluates risk-adjusted APY across all active on-chain protocols and deploys capital to the optimal mix — hourly cycles, on-chain auditability.</p>
+    </div>
+    <div class="step">
+      <span class="step-num">04 — COMPOUND</span>
+      <h3>YIELD COMPOUNDS</h3>
+      <p>Yield compounds automatically. Redeem $vsUSD → USDG + yield at any time. No lock-up period, no exit fee.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     VAULTS
+══════════════════════════════ -->
+<section id="vaults" style="background: var(--bg2); max-width: 100%; padding: 96px 48px;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <span class="section-tag">// PRODUCTS</span>
+    <h2>THREE VAULTS. ONE DECISION.</h2>
+    <p class="section-sub">Select your risk profile. The protocol handles allocation, rebalancing, and compounding automatically.</p>
+    <div class="vaults">
+
+      <!-- STABLE VAULT -->
+      <div class="vault-card">
+        <div class="vault-risk">LOW RISK · CAPITAL-PRESERVING</div>
+        <div class="vault-name">STABLE VAULT</div>
+        <div class="vault-apy">11.2%</div>
+        <div class="vault-apy-label">Current APY · Range: 8–14%*</div>
+        <p class="vault-desc">
+          100% stablecoin exposure deployed across Morpho lending markets and Aerodrome USDG/USDT LP positions. Consistent, risk-calibrated yield. Designed for capital preservation with superior returns over idle holdings.
+        </p>
+        <div class="vault-tags">
+          <span class="vault-tag">Morpho</span>
+          <span class="vault-tag">Aerodrome</span>
+          <span class="vault-tag">USDG/USDT</span>
+          <span class="vault-tag">Robinhood Chain</span>
+        </div>
+        <div class="vault-bar">
+          <div class="vault-bar-label">
+            <span>TVL CAPACITY</span><span>$1.24M / $5M</span>
+          </div>
+          <div class="vault-bar-track"><div class="vault-bar-fill" style="width:24.8%"></div></div>
+        </div>
+        <button class="btn-outline" style="width:100%; text-align:center;" onclick="openWallet()">SELECT VAULT →</button>
+      </div>
+
+      <!-- BOOST VAULT -->
+      <div class="vault-card featured">
+        <div class="vault-risk">MEDIUM RISK · DIVERSIFIED</div>
+        <div class="vault-name">BOOST VAULT</div>
+        <div class="vault-apy">18.7%</div>
+        <div class="vault-apy-label">Current APY · Range: 14–22%*</div>
+        <p class="vault-desc">
+          Blends DeFi yields with RWA income via Ondo Finance tokenized T-bills and Centrifuge private credit. The AI engine continuously shifts weight toward the highest risk-adjusted opportunity across all integrated protocols.
+        </p>
+        <div class="vault-tags">
+          <span class="vault-tag">Ondo Finance</span>
+          <span class="vault-tag">Centrifuge</span>
+          <span class="vault-tag">Aerodrome LP</span>
+          <span class="vault-tag">AI Engine</span>
+        </div>
+        <div class="vault-bar">
+          <div class="vault-bar-label">
+            <span>TVL CAPACITY</span><span>$680K / $10M</span>
+          </div>
+          <div class="vault-bar-track"><div class="vault-bar-fill" style="width:6.8%"></div></div>
+        </div>
+        <button class="btn-primary" style="width:100%; text-align:center;" onclick="openWallet()">SELECT VAULT →</button>
+      </div>
+
+      <!-- ALPHA VAULT -->
+      <div class="vault-card">
+        <div class="vault-risk">HIGH RISK · ALPHA-SEEKING</div>
+        <div class="vault-name">ALPHA VAULT</div>
+        <div class="vault-apy">33.4%</div>
+        <div class="vault-apy-label">Current APY · Range: 25–40%*</div>
+        <p class="vault-desc">
+          Captures perp funding rates via delta-neutral strategies, BTCFi yield layers, and x402 agentic payment flows. Highest APY potential. The AI risk engine monitors positions continuously and exits on early stress signals.
+        </p>
+        <div class="vault-tags">
+          <span class="vault-tag">Perp Funding</span>
+          <span class="vault-tag">BTCFi</span>
+          <span class="vault-tag">x402</span>
+          <span class="vault-tag">Delta-Neutral</span>
+        </div>
+        <div class="vault-bar">
+          <div class="vault-bar-label">
+            <span>TVL CAPACITY</span><span>$210K / $5M</span>
+          </div>
+          <div class="vault-bar-track"><div class="vault-bar-fill" style="width:4.2%"></div></div>
+        </div>
+        <button class="btn-outline" style="width:100%; text-align:center;" onclick="openWallet()">SELECT VAULT →</button>
+      </div>
+
+    </div>
+    <p style="font-size:12px; color:var(--muted); margin-top:20px; font-family:var(--mono);">
+      * APY figures reflect current on-chain rates and are not guaranteed. DeFi involves smart contract and liquidity risks. Past performance is not indicative of future results.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     AI ENGINE
+══════════════════════════════ -->
+<section id="ai">
+  <span class="section-tag">// INTELLIGENCE LAYER</span>
+  <h2>THE AI OPTIMIZER</h2>
+  <p class="section-sub">A purpose-built AI engine that evaluates, routes, and rebalances capital — 24/7, on-chain, verifiable.</p>
+  <div class="ai-grid">
+    <div class="ai-card">
+      <div class="ai-card-icon">⚡</div>
+      <h3>AUTONOMOUS REBALANCING</h3>
+      <p>Routes capital toward the highest risk-adjusted opportunity in real time. Hourly allocation cycles, no manual governance required. Every decision is an on-chain transaction.</p>
+    </div>
+    <div class="ai-card">
+      <div class="ai-card-icon">🛡️</div>
+      <h3>LIQUIDITY RISK DETECTION</h3>
+      <p>Identifies early liquidity stress signals and exits positions ahead of impact. Trained on 3+ years of on-chain DeFi event data including depegs, bank runs, and protocol exploits.</p>
+    </div>
+    <div class="ai-card">
+      <div class="ai-card-icon">🤖</div>
+      <h3>x402 AGENTIC COMMERCE</h3>
+      <p>Routes idle capital into x402 agentic payment flows — the 2026 primitive enabling autonomous AI-to-AI microtransactions on Robinhood Chain. Earliest integrator in the ecosystem.</p>
+    </div>
+    <div class="ai-card">
+      <div class="ai-card-icon">🔍</div>
+      <h3>ON-CHAIN AUDITABILITY</h3>
+      <p>Every allocation decision is a verifiable on-chain transaction. View the optimizer's logic in real-time on Solscan. No opaque logic, no hidden fees, no centralized black box.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SECURITY
+══════════════════════════════ -->
+<section id="security" style="background: var(--bg2); max-width:100%; padding: 96px 48px;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <span class="section-tag">// SECURITY & COMPLIANCE</span>
+    <h2>BUILT TO BE TRUSTED</h2>
+    <p class="section-sub">Security is non-negotiable. Every component of Vaulta is designed around asset safety and protocol transparency.</p>
+
+    <!-- Audit Banner -->
+    <div class="audit-banner">
+      <div class="audit-banner-left">
+        <h3>SMART CONTRACT AUDIT — OTTERSEC</h3>
+        <p>Full audit of all Vaulta smart contracts. Report published on-chain and available publicly. Zero critical findings.</p>
+      </div>
+      <div class="audit-status">
+        <div class="badge-live">AUDIT COMPLETE</div>
+        <a href="https://www.vaulta.works/audit" class="btn-outline" target="_blank">VIEW REPORT →</a>
+      </div>
+    </div>
+
+    <div class="security-grid">
+      <div class="sec-card">
+        <span class="sec-icon">🔐</span>
+        <div class="sec-label">NON-CUSTODIAL</div>
+        <div class="sec-val">You hold your keys at all times. Vaulta never takes custody of assets.</div>
+      </div>
+      <div class="sec-card">
+        <span class="sec-icon">📋</span>
+        <div class="sec-label">OPEN SOURCE</div>
+        <div class="sec-val">All contracts published on GitHub. Fully verifiable by anyone.</div>
+      </div>
+      <div class="sec-card">
+        <span class="sec-icon">⛓️</span>
+        <div class="sec-label">ON-CHAIN LOGIC</div>
+        <div class="sec-val">Every rebalance is a verifiable on-chain transaction. Full transparency.</div>
+      </div>
+      <div class="sec-card">
+        <span class="sec-icon">🚪</span>
+        <div class="sec-label">NO LOCK-UPS</div>
+        <div class="sec-val">Withdraw USDG + accrued yield at any time. No exit fees.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     TEAM
+══════════════════════════════ -->
+<section id="team">
+  <span class="section-tag">// CORE CONTRIBUTORS</span>
+  <h2>WHO BUILDS VAULTA</h2>
+  <p class="section-sub">A distributed team of DeFi-native developers, on-chain researchers, and AI engineers. Collective experience across multiple market cycles.</p>
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar">K</div>
+      <div class="team-name">krypt0x.sol</div>
+      <div class="team-role">Protocol Lead</div>
+      <p class="team-bio">Previously shipped two audited DeFi protocols on Ethereum. EVM protocol developer since 2021. Specializes in on-chain yield infrastructure and automated capital routing.</p>
+      <div class="team-links">
+        <a href="#" class="team-link">Twitter →</a>
+        <a href="#" class="team-link">GitHub →</a>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">R</div>
+      <div class="team-name">rayne.eth</div>
+      <div class="team-role">AI Engine Lead</div>
+      <p class="team-bio">ML engineer with 4 years of on-chain strategy research. Built risk-detection models trained on 3+ years of DeFi event data. Contributor to multiple open-source DeFi analytics tools.</p>
+      <div class="team-links">
+        <a href="#" class="team-link">Twitter →</a>
+        <a href="#" class="team-link">GitHub →</a>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">V</div>
+      <div class="team-name">vault_v</div>
+      <div class="team-role">RWA & Integrations</div>
+      <p class="team-bio">Previously at a tokenized asset fund. Deep expertise in Ondo Finance, Centrifuge, and real-world asset composability. Leads all institutional protocol integrations.</p>
+      <div class="team-links">
+        <a href="#" class="team-link">Twitter →</a>
+        <a href="#" class="team-link">GitHub →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     ROADMAP
+══════════════════════════════ -->
+<section id="roadmap" style="background: var(--bg2); max-width:100%; padding: 96px 48px;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <span class="section-tag">// TIMELINE</span>
+    <h2>ROADMAP</h2>
+    <p class="section-sub">Transparent, milestone-driven development. Every phase gated by security audit completion.</p>
+    <div class="roadmap">
+      <div class="rm-card active">
+        <div class="rm-phase">PHASE 1</div>
+        <div class="rm-title">FOUNDATION</div>
+        <div class="rm-date">Q2 2026 — NOW</div>
+        <ul class="rm-items">
+          <li>Smart contract audit (OtterSec) — complete</li>
+          <li>Stable Vault live — USDG → $vsUSD</li>
+          <li>AI optimizer v1 deployed on-chain</li>
+          <li>Wallet adapter (MetaMask, WalletConnect, Coinbase Wallet)</li>
+          <li>On-chain TVL dashboard live</li>
+        </ul>
+        <span class="rm-status">● LIVE NOW</span>
+      </div>
+      <div class="rm-card">
+        <div class="rm-phase">PHASE 2</div>
+        <div class="rm-title">SCALE</div>
+        <div class="rm-date">Q3 2026</div>
+        <ul class="rm-items">
+          <li>Token Generation Event (TGE) — $VAULTA</li>
+          <li>Boost Vault live — RWA integration (Ondo)</li>
+          <li>DAO governance module deployed</li>
+          <li>Institutional partnerships announced</li>
+        </ul>
+        <span class="rm-status" style="color:var(--muted); background:var(--bg3); border-color:var(--border);">○ UPCOMING</span>
+      </div>
+      <div class="rm-card">
+        <div class="rm-phase">PHASE 3</div>
+        <div class="rm-title">FULL PROTOCOL</div>
+        <div class="rm-date">Q4 2026 – Q1 2027</div>
+        <ul class="rm-items">
+          <li>Alpha Vault + x402 agentic flows</li>
+          <li>Centrifuge private credit integration</li>
+          <li>DAO governance fully active</li>
+          <li>Target TVL: $25M+</li>
+        </ul>
+        <span class="rm-status" style="color:var(--muted); background:var(--bg3); border-color:var(--border);">○ PLANNED</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     CTA
+══════════════════════════════ -->
+<div class="cta-section">
+  <div class="cta-bg"></div>
+  <span class="section-tag" style="display:block; margin-bottom:16px;">// GET STARTED</span>
+  <h2>ACTIVATE YOUR CAPITAL TODAY</h2>
+  <p>Non-custodial. Audited. No lock-up. Your USDG starts working the moment you deposit.</p>
+  <div class="cta-btns">
+    <button class="btn-primary" onclick="openWallet()">LAUNCH APP →</button>
+    <a href="https://www.vaulta.works/docs" class="btn-outline" target="_blank">READ DOCS</a>
+    <a href="https://discord.gg/vaulta" class="btn-outline" target="_blank">JOIN DISCORD</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     FOOTER
+══════════════════════════════ -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <img src="https://www.vaulta.works/logo.png" alt="Vaulta"/> VAULTA
+      </a>
+      <p>Autonomous Yield Infrastructure on Robinhood Chain. Non-custodial. Audited. AI-powered.</p>
+      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="https://x.com/vaultaworks" class="team-link" target="_blank">Twitter/X</a>
+        <a href="https://discord.gg/vaulta" class="team-link" target="_blank">Discord</a>
+        <a href="https://github.com/vaultaworks/vaulta" class="team-link" target="_blank">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>PROTOCOL</h4>
+        <a href="#vaults">Vaults</a>
+        <a href="#ai">AI Engine</a>
+        <a href="#security">Security</a>
+        <a href="#roadmap">Roadmap</a>
+      </div>
+      <div class="footer-col">
+        <h4>RESOURCES</h4>
+        <a href="https://www.vaulta.works/docs" target="_blank">Documentation</a>
+        <a href="https://www.vaulta.works/audit" target="_blank">Audit Report</a>
+        <a href="https://github.com/vaultaworks/vaulta" target="_blank">GitHub</a>
+        <a href="https://solscan.io" target="_blank">Solscan Explorer</a>
+      </div>
+      <div class="footer-col">
+        <h4>LEGAL</h4>
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/risk">Risk Disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Vaulta Protocol · MIT License · Built on Robinhood Chain</span>
+    <div class="footer-legal">
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/risk">Risk Disclosure</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════
+     WALLET MODAL
+══════════════════════════════ -->
+<div class="modal-overlay" id="walletModal" onclick="closeWalletOnBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>CONNECT WALLET</h3>
+      <button class="modal-close" onclick="closeWallet()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="wallet-option" onclick="connectWallet('MetaMask')">
+        <span class="wallet-icon">👻</span>
+        <div>
+          <div class="wallet-name">MetaMask</div>
+          <div class="wallet-desc">Most popular Robinhood Chain wallet</div>
+        </div>
+      </div>
+      <div class="wallet-option" onclick="connectWallet('WalletConnect')">
+        <span class="wallet-icon">🔆</span>
+        <div>
+          <div class="wallet-name">WalletConnect</div>
+          <div class="wallet-desc">Native Robinhood Chain wallet</div>
+        </div>
+      </div>
+      <div class="wallet-option" onclick="connectWallet('CoinbaseWallet')">
+        <span class="wallet-icon">🎒</span>
+        <div>
+          <div class="wallet-name">Coinbase Wallet</div>
+          <div class="wallet-desc">Self-custody wallet for Robinhood Chain</div>
+        </div>
+      </div>
+      <div class="wallet-option" onclick="connectWallet('Coinbase')">
+        <span class="wallet-icon">🔵</span>
+        <div>
+          <div class="wallet-name">Coinbase Wallet</div>
+          <div class="wallet-desc">Multi-chain wallet</div>
+        </div>
+      </div>
+      <p class="modal-note">
+        By connecting, you agree to our <a href="/terms">Terms of Service</a> and <a href="/risk">Risk Disclosure</a>.<br/>
+        Vaulta is non-custodial — your keys stay yours.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCRIPTS
+══════════════════════════════ -->
+<script>
+  // ── TICKER ──
+  const tickerItems = [
+    { label: 'STABLE VAULT', val: '+11.2% APY', cls: 'pos' },
+    { label: 'BOOST VAULT',  val: '+18.7% APY', cls: 'pos' },
+    { label: 'ALPHA VAULT',  val: '+33.4% APY', cls: 'pos' },
+    { label: 'VAULTA TVL',   val: '$2.14M',     cls: 'val' },
+    { label: '$vsUSD HOLDERS', val: '3,104',    cls: 'val' },
+    { label: 'AI REBALANCES', val: '1,847 TODAY', cls: 'val' },
+    { label: 'MORPHO',       val: 'LIVE ●',      cls: 'pos' },
+    { label: 'AERODROME',    val: 'LIVE ●',      cls: 'pos' },
+    { label: 'x402 PROTOCOL',val: 'INTEGRATED',  cls: 'val' },
+    { label: 'ONDO FINANCE', val: 'LIVE ●',      cls: 'pos' },
+    { label: 'NETWORK',      val: 'Robinhood Chain', cls: 'val' },
+    { label: 'AUDIT',        val: 'OtterSec ✓',  cls: 'pos' },
+  ];
+
+  function buildTicker() {
+    const wrap = document.getElementById('ticker');
+    const html = tickerItems.map(t =>
+      `<span class="ticker-item"><span class="ticker-dot"></span><span class="label">${t.label}</span><span class="${t.cls}">${t.val}</span></span>`
+    ).join('');
+    wrap.innerHTML = html + html; // duplicate for seamless loop
+  }
+  buildTicker();
+
+  // ── LIVE COUNTER ──
+  let rebalCount = 1847;
+  setInterval(() => {
+    rebalCount++;
+    const fmt = rebalCount.toLocaleString();
+    const el1 = document.getElementById('stat-rebalances');
+    const el2 = document.getElementById('term-rebal');
+    if (el1) el1.textContent = fmt;
+    if (el2) el2.textContent = fmt;
+  }, 4200);
+
+  // ── TERMINAL TIME ──
+  let secs = 4;
+  setInterval(() => {
+    secs = Math.floor(Math.random() * 8) + 1;
+    const el = document.getElementById('term-time');
+    if (el) el.textContent = secs + 's ago';
+  }, 3000);
+
+  // ── WALLET MODAL ──
+  function openWallet() {
+    document.getElementById('walletModal').classList.add('open');
+  }
+  function closeWallet() {
+    document.getElementById('walletModal').classList.remove('open');
+  }
+  function closeWalletOnBg(e) {
+    if (e.target === document.getElementById('walletModal')) closeWallet();
+  }
+  function connectWallet(name) {
+    alert(`Connecting to ${name}... \n\nIntegrate wagmi/viem EVM wallet connector here for real connection.`);
+    closeWallet();
+  }
+
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.vault-card, .ai-card, .step, .team-card, .sec-card, .rm-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

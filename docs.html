@@ -1,0 +1,787 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAULTA — Documentation</title>
+<meta name="description" content="Vaulta documentation. Overview of the protocol, AI engine, and vault products on Robinhood Chain.">
+<meta property="og:title" content="VAULTA — Documentation">
+<meta property="og:description" content="Vaulta documentation. Overview of the protocol, AI engine, and vault products on Robinhood Chain.">
+<meta property="og:image" content="https://vaulta.works/og-image.jpg">
+<meta property="og:url" content="https://vaulta.works/docs">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VAULTA — Documentation">
+<meta name="twitter:description" content="Vaulta documentation. Overview of the protocol, AI engine, and vault products on Robinhood Chain.">
+<meta name="twitter:image" content="https://vaulta.works/og-image.jpg">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+      --bg: #0a0c0f;
+      --bg2: #0f1217;
+      --bg3: #151a22;
+      --border: rgba(255,255,255,0.07);
+      --border-glow: rgba(20,255,180,0.25);
+      --green: #14ffb4;
+      --green-dim: rgba(20,255,180,0.12);
+      --green-mid: rgba(20,255,180,0.35);
+      --white: #f0f4f8;
+      --muted: #6b7685;
+      --text: #c8d4e0;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --radius: 12px;
+      --radius-lg: 20px;
+
+      /* Mapped legacy docs variables */
+      --void: var(--bg); --deep: var(--bg2); --surface: var(--bg2); --lift: var(--bg3);
+      --glass: rgba(255,255,255,0.04); --line: var(--border); --line2: var(--border);
+      --sol-purple: #9945FF; --sol-green: var(--green); --sol-grad: linear-gradient(90deg, #9945FF, var(--green));
+      --gold: var(--green); --gold-hi: var(--green); --gold-lo: var(--green-mid);
+      --gold-bg: var(--green-dim); --gold-bd: var(--green-mid);
+      --lime: var(--green); --lime-lo: var(--green-mid);
+      --lime-bg: var(--green-dim); --lime-bd: var(--green-mid);
+      --sky: var(--muted); --red: #ff4444;
+      --red-bg: rgba(255,68,68,0.05); --red-bd: rgba(255,68,68,0.25);
+      --ink: var(--white); --fog: var(--muted); --mist: rgba(255,255,255,0.1); --ghost: rgba(255,255,255,0.05);
+      --display: var(--mono); --t: 0.2s; --ease: ease-out; --snap: cubic-bezier(0.4, 0, 0.2, 1); --amber: #ffb300;
+    }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body { background: var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.7;}
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");opacity:0.022;mix-blend-mode:overlay;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--void);}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(0,0,0,0.96);border-bottom:1px solid var(--line2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.nav-brand{font-family:var(--display);font-size:22px;letter-spacing:6px;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:10px;}
+.nav-pulse{width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0;animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(57,217,138,0.5);}50%{opacity:.6;box-shadow:0 0 0 5px rgba(57,217,138,0);}}
+.nav-back{color:var(--fog);text-decoration:none;font-family:var(--sans);font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:500;transition:color var(--t);}
+.nav-back:hover{color:var(--ink);}
+
+.btn-lime { background:var(--lime-bg); cursor:pointer; color:var(--lime); border:1px solid var(--lime-bd); border-radius:4px; padding:9px 22px; font-size:10px; letter-spacing:2px; text-transform:uppercase; font-weight:700; font-family:var(--mono); text-decoration:none; transition:all var(--t); display:inline-flex; align-items:center; gap:8px; }
+.btn-lime:hover { background:rgba(57,217,138,0.12); border-color:rgba(57,217,138,0.4); transform:scale(1.02); filter:brightness(1.1); }
+
+/* DOCS LAYOUT */
+.docs-layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh;padding-top:64px;}
+.docs-sidebar{background:var(--deep);border-right:1px solid var(--line2);position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;padding:40px 0;}
+.docs-sidebar::-webkit-scrollbar{width:2px;}.docs-sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);}
+.docs-main{background:var(--void);padding:64px 72px;max-width:960px;}
+
+/* SIDEBAR NAV */
+.sb-section-title{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-lo);padding:0 32px;margin-bottom:12px;margin-top:32px;}
+.sb-section-title:first-child{margin-top:0;}
+.sb-link{display:block;padding:12px 32px;font-family:var(--sans);font-size:13px;letter-spacing:0.5px;color:var(--fog);font-weight:400;text-decoration:none;transition:all var(--t);border-left:2px solid transparent;}
+.sb-link:hover{color:var(--ink);border-left-color:var(--gold-lo);background:rgba(255,255,255,0.01);}
+.sb-link.active{color:var(--gold);border-left-color:var(--gold);background:var(--gold-bg);font-weight:500;}
+
+/* DOCS CONTENT */
+.doc-section{margin-bottom:80px;padding-top:8px;}
+.doc-section:last-child{margin-bottom:0;}
+.doc-h1{font-family:var(--display);font-size:56px;letter-spacing:4px;margin-bottom:16px;line-height:0.94;}
+.doc-h2{font-family:var(--display);font-size:36px;letter-spacing:3px;margin-bottom:20px;color:var(--gold);line-height:1;}
+.doc-h3{font-family:var(--display);font-size:24px;letter-spacing:2px;margin-bottom:16px;}
+.doc-lead{font-size:18px;color:var(--fog);line-height:1.85;font-weight:300;margin-bottom:32px;max-width:720px;}
+.doc-p{font-size:15px;color:var(--fog);line-height:1.9;font-weight:300;margin-bottom:24px;max-width:720px;}
+.doc-p:last-child{margin-bottom:0;}
+.doc-p strong{color:var(--ink);font-weight:500;}
+.doc-sep{border:none;border-top:1px solid var(--line2);margin:56px 0;}
+.doc-link{color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-lo);transition:border-color var(--t);}
+.doc-link:hover{border-color:var(--gold);}
+
+/* CODE BLOCK (Terminal style) */
+.code-block{background:var(--surface);border:1px solid var(--line);margin:32px 0;border-radius:4px;overflow:hidden;}
+.code-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--fog);background:rgba(255,255,255,0.02);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;}
+.code-label::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);margin-right:10px;}
+.code-block pre{font-family:var(--mono);font-size:13px;line-height:1.8;color:var(--fog);overflow-x:auto;padding:24px;background-image:repeating-linear-gradient(transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px);}
+.code-block pre .k{color:var(--gold);}
+.code-block pre .s{color:var(--lime);}
+.code-block pre .c{color:rgba(57,217,138,0.35);}
+.code-block pre .v{color:rgba(200,200,200,0.8);}
+
+/* TABLE */
+.doc-table{width:100%;border-collapse:collapse;margin:32px 0;font-size:14px;border-radius:4px;overflow:hidden;border:1px solid var(--line2);}
+.doc-table th{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-lo);padding:16px 20px;border-bottom:1px solid var(--line);text-align:left;background:rgba(255,255,255,0.02);}
+.doc-table td{padding:16px 20px;border-bottom:1px solid var(--line2);color:var(--fog);vertical-align:top;}
+.doc-table tr:nth-child(even) td{background:rgba(255,255,255,0.015);}
+.doc-table tr:last-child td{border-bottom:none;}
+.doc-table td:first-child{font-family:var(--sans);font-weight:500;font-size:13px;color:var(--ink);}
+
+/* CALLOUT */
+.callout{display:flex;gap:16px;padding:24px 28px;border-left:4px solid;margin:32px 0;font-size:14px;color:var(--fog);line-height:1.8;border-radius:0 4px 4px 0;background:var(--surface);}
+.callout.info{border-color:#3b82f6;background:rgba(59,130,246,0.06);}
+.callout.warn{border-color:var(--amber);background:rgba(255,179,0,0.06);}
+.callout.safe{border-color:var(--lime);background:var(--lime-bg);}
+.callout-icon{flex-shrink:0;font-size:16px;margin-top:-2px;}
+
+/* VAULT PILLS */
+.vault-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1px solid;font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:2px 4px 16px 0;border-radius:2px;}
+.vp-s{color:var(--lime);border-color:var(--lime-bd);background:var(--lime-bg);}
+.vp-b{color:var(--amber);border-color:rgba(255,179,0,0.3);background:rgba(255,179,0,0.05);}
+.vp-a{color:var(--red);border-color:var(--red-bd);background:var(--red-bg);}
+
+.mobile-nav-toggle { display: none; margin-bottom: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 12px 16px; cursor: pointer; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-lo); }
+.mobile-nav-menu { display: none; margin-bottom: 32px; background: var(--deep); border: 1px solid var(--line); border-radius: 4px; padding: 16px 0; }
+.mobile-nav-menu .sb-section-title { margin-top: 16px; }
+.mobile-nav-menu .sb-section-title:first-child { margin-top: 0; }
+.mobile-nav-menu .sb-link { padding: 10px 32px; }
+
+@media(max-width:960px){.docs-layout{grid-template-columns:220px 1fr;}}
+@media(max-width:768px){.docs-layout{grid-template-columns:1fr;}.docs-sidebar{display:none;}.docs-main{padding:32px 24px;}.mobile-nav-toggle{display:block;}}
+
+/* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 48px 32px;
+      display: flex; flex-direction: column; gap: 32px;
+    }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .footer-brand { max-width: 280px; }
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 14px; font-weight: 700;
+      color: var(--white); margin-bottom: 12px; text-decoration: none;
+    }
+    .footer-logo img { width: 24px; }
+    .footer-brand p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+    .footer-cols { display: flex; gap: 64px; }
+    .footer-col h4 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 16px; }
+    .footer-col a {
+      display: block; font-size: 13px; color: var(--text);
+      text-decoration: none; margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--green); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 24px; border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em;
+    }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { color: var(--muted); text-decoration: none; }
+    .footer-legal a:hover { color: var(--white); }
+
+    
+
+/* ── WALLET MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); width: 440px; overflow: hidden;
+      transform: translateY(20px); transition: transform 0.25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-family: var(--mono); font-size: 14px; color: var(--white); }
+    .modal-close {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 20px; line-height: 1; padding: 0; transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--white); }
+    .modal-body { padding: 24px; }
+    .wallet-option {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 10px; cursor: pointer;
+      background: var(--bg3); transition: border-color 0.2s;
+    }
+    .wallet-option:hover { border-color: var(--border-glow); }
+    .wallet-icon { font-size: 22px; width: 32px; text-align: center; }
+    .wallet-name { font-family: var(--mono); font-size: 13px; color: var(--white); }
+    .wallet-desc { font-size: 11px; color: var(--muted); }
+    .modal-note {
+      margin-top: 16px; font-size: 11px; color: var(--muted); text-align: center;
+      line-height: 1.5;
+    }
+    .modal-note a { color: var(--green); text-decoration: none; }
+
+    
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="https://www.vaulta.works/logo.png" alt="Vaulta"/>
+    VAULTA
+  </a>
+  <div class="nav-links">
+    <a href="/#how">Protocol</a>
+    <a href="/#vaults">Vaults</a>
+    <a href="/#ai">AI Engine</a>
+    <a href="/#security">Security</a>
+    <a href="/#roadmap">Roadmap</a>
+    <a href="https://www.vaulta.works/docs" target="_blank">Docs</a>
+  </div>
+  <div class="nav-right">
+    <div class="badge-live">MAINNET · ROBINHOOD CHAIN</div>
+    <button class="btn-primary" onclick="openWallet()">CONNECT WALLET</button>
+  </div>
+</nav>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR -->
+  <div class="docs-sidebar">
+    <div class="sb-section-title">Getting Started</div>
+    <a href="#overview" class="sb-link active">Overview</a>
+    <a href="#how" class="sb-link">How It Works</a>
+    <a href="#MAINNET" class="sb-link">MAINNET Guide</a>
+
+    <div class="sb-section-title">Vaults</div>
+    <a href="#stable" class="sb-link">Stable Vault</a>
+    <a href="#boost" class="sb-link">Boost Vault</a>
+    <a href="#alpha" class="sb-link">Alpha Vault</a>
+
+    <div class="sb-section-title">Protocol</div>
+    <a href="#vsusd" class="sb-link">$vsUSD Token</a>
+    <a href="#ai" class="sb-link">AI Optimizer</a>
+    <a href="#security" class="sb-link">Security</a>
+    <a href="#integrations" class="sb-link">Integrations</a>
+
+    <div class="sb-section-title">Resources</div>
+    <a href="#faq" class="sb-link">FAQ</a>
+    <a href="#roadmap" class="sb-link">Roadmap</a>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="docs-main">
+    <button class="mobile-nav-toggle" onclick="document.getElementById('mobMenu').style.display = document.getElementById('mobMenu').style.display === 'block' ? 'none' : 'block'">≡ Documentation Menu</button>
+    <div class="mobile-nav-menu" id="mobMenu">
+      <div class="sb-section-title">Getting Started</div>
+      <a href="#overview" class="sb-link active" onclick="document.getElementById('mobMenu').style.display='none'">Overview</a>
+      <a href="#how" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">How It Works</a>
+      <a href="#MAINNET" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">MAINNET Guide</a>
+
+      <div class="sb-section-title">Vaults</div>
+      <a href="#stable" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">Stable Vault</a>
+      <a href="#boost" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">Boost Vault</a>
+      <a href="#alpha" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">Alpha Vault</a>
+
+      <div class="sb-section-title">Protocol</div>
+      <a href="#vsusd" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">$vsUSD Token</a>
+      <a href="#ai" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">AI Optimizer</a>
+      <a href="#security" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">Security</a>
+      <a href="#integrations" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">Integrations</a>
+
+      <div class="sb-section-title">Resources</div>
+      <a href="#faq" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">FAQ</a>
+      <a href="#roadmap" class="sb-link" onclick="document.getElementById('mobMenu').style.display='none'">Roadmap</a>
+    </div>
+
+    <div class="doc-section" id="overview">
+      <div class="doc-h1" style="background: var(--sol-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;">DOCUMENTATION</div>
+      <p class="doc-lead">Vaulta is an AI-driven, autonomous yield infrastructure protocol built on Robinhood Chain. This documentation covers the protocol architecture, vault products, $vsUSD token mechanics, and the AI optimizer engine.</p>
+      <div class="callout safe">
+        <div class="callout-icon">✓</div>
+        <div>Vaulta is currently live on <strong style="color:var(--ink)">Robinhood Chain MAINNET</strong>. Mainnet launch is targeted for Q3 2026. All APY figures are estimates based on current protocol conditions — not guarantees.</div>
+      </div>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="how">
+      <div class="doc-h2">HOW IT WORKS</div>
+      <p class="doc-p">The core Vaulta flow is designed to be simple for users while complex under the hood:</p>
+
+      <div class="code-block">
+        <div class="code-label">// Protocol Flow</div>
+        <pre><span class="c">// 1. User deposits USDG into a vault</span>
+<span class="k">await</span> vault.<span class="v">deposit</span>(<span class="s">1000_000000</span>, user.address); <span class="c">// 1000 USDG (6 decimals)</span>
+
+<span class="c">// 2. Smart contract mints $vsUSD 1:1</span>
+<span class="c">// vsUSD.balanceOf(user) === 1000e18</span>
+
+<span class="c">// 3. AI optimizer routes capital (off-chain decision, on-chain execution)</span>
+<span class="c">// Allocates to: Morpho (40%), Aerodrome (35%), Ondo (25%)</span>
+
+<span class="c">// 4. Yield compounds automatically — vsUSD appreciates</span>
+<span class="c">// After 12 months at 11.2%: 1000 vsUSD → worth ~$1,112 USDG</span>
+
+<span class="c">// 5. User redeems anytime — no lock-up</span>
+<span class="k">await</span> vault.<span class="v">redeem</span>(vsUSD.balanceOf(user), user.address);</pre>
+      </div>
+
+      <p class="doc-p">The AI optimizer runs on an hourly cycle, evaluating APY rates, liquidity depth, counterparty risk, and gas efficiency before making any rebalancing decision. All decisions are executed as on-chain transactions and are fully verifiable.</p>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="MAINNET">
+      <div class="doc-h2">MAINNET GUIDE</div>
+      <p class="doc-p">The Vaulta MAINNET is live on <strong>Robinhood Chain</strong> (Chain ID: 46632). You can simulate the full deposit flow without any real funds.</p>
+
+      <div class="callout warn">
+        <div class="callout-icon">⚠</div>
+        <div>The MAINNET simulator uses <strong style="color:var(--ink)">simulated transactions only</strong>. No real USDG or ETH is required or at risk. This is purely for protocol familiarization.</div>
+      </div>
+
+      <div class="doc-h3" style="margin-top:28px">Try It Now</div>
+      <p class="doc-p">Visit the <a href="/app" class="doc-link">MAINNET App</a> to simulate deposits across all three vaults. The interface shows live APY feeds, AI rebalance logs, and the full transaction simulation flow.</p>
+
+      <table class="doc-table">
+        <thead><tr><th>Network</th><th>Chain ID</th><th>RPC</th><th>Faucet</th></tr></thead>
+        <tbody>
+          <tr><td>Robinhood Chain</td><td>46632</td><td>https://rpc.mainnet.chain.robinhood.com</td><td>N/A (mainnet, no faucet)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="stable">
+      <div class="doc-h2">STABLE VAULT</div>
+      <span class="vault-pill vp-s">Low Risk</span>
+      <p class="doc-lead">The Stable Vault maintains 100% stablecoin exposure, deploying capital across blue-chip DeFi lending protocols and LP positions on Robinhood Chain.</p>
+      <table class="doc-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Est. APY</td><td>8–14% (current: 11.2%)</td></tr>
+          <tr><td>Risk Level</td><td>Low — stablecoin-only exposure</td></tr>
+          <tr><td>Deposit Token</td><td>USDG</td></tr>
+          <tr><td>Receipt Token</td><td>$vsUSD</td></tr>
+          <tr><td>Redemption</td><td>Anytime, no lock-up</td></tr>
+          <tr><td>Protocols</td><td>Morpho, Aerodrome (USDG/USDT LP)</td></tr>
+          <tr><td>TVL Capacity</td><td>$5M (Phase 1)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout info"><div class="callout-icon">ℹ</div><div>The Stable Vault is the recommended starting point for new users. Capital preservation is the primary objective — yield is secondary.</div></div>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="boost">
+      <div class="doc-h2">BOOST VAULT</div>
+      <span class="vault-pill vp-b">Medium Risk</span>
+      <p class="doc-lead">The Boost Vault blends on-chain DeFi yield with real-world asset income through Ondo Finance and Centrifuge, targeting enhanced risk-adjusted returns.</p>
+      <table class="doc-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Est. APY</td><td>14–22% (current: 18.7%)</td></tr>
+          <tr><td>Risk Level</td><td>Medium — RWA + DeFi blend</td></tr>
+          <tr><td>Allocation Split</td><td>~70% DeFi / ~30% RWA (AI-adjusted)</td></tr>
+          <tr><td>Protocols</td><td>Ondo Finance (T-bills), Centrifuge, Aerodrome LP</td></tr>
+          <tr><td>TVL Capacity</td><td>$10M (Phase 2)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="alpha">
+      <div class="doc-h2">ALPHA VAULT</div>
+      <span class="vault-pill vp-a">High Risk</span>
+      <p class="doc-lead">The Alpha Vault pursues maximum yield through perpetual funding rate capture, BTCFi yield strategies, and x402 agentic payment flow integration.</p>
+      <div class="callout warn"><div class="callout-icon">⚠</div><div>The Alpha Vault is designed for participants with high risk tolerance. APY is volatile and may fluctuate significantly. The AI risk engine monitors positions continuously, but losses are possible.</div></div>
+      <table class="doc-table" style="margin-top:20px">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Est. APY</td><td>25–40% (current: 33.4%)</td></tr>
+          <tr><td>Risk Level</td><td>High — perp funding + agentic flows</td></tr>
+          <tr><td>Strategies</td><td>Perp funding rate capture, BTCFi, x402 agentic flows</td></tr>
+          <tr><td>Approach</td><td>Delta-neutral where possible</td></tr>
+          <tr><td>TVL Capacity</td><td>$5M (Phase 3)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="vsusd">
+      <div class="doc-h2">$vsUSD TOKEN</div>
+      <p class="doc-p"><strong>$vsUSD</strong> is a yield-bearing ERC-20 stablecoin issued by Vaulta. When you deposit USDG into any vault, you receive $vsUSD at a 1:1 ratio. As the vault earns yield, $vsUSD appreciates in value relative to USDG.</p>
+      <table class="doc-table">
+        <thead><tr><th>Property</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Standard</td><td>ERC-20 (OpenZeppelin)</td></tr>
+          <tr><td>Peg at deposit</td><td>1 $vsUSD = 1 USDG</td></tr>
+          <tr><td>Yield mechanism</td><td>Price appreciation (not rebasing)</td></tr>
+          <tr><td>Redemption</td><td>Anytime, permissionless</td></tr>
+          <tr><td>Composability</td><td>Usable as collateral in compatible DeFi protocols</td></tr>
+          <tr><td>Admin mint</td><td>None — only minted 1:1 with USDG deposits</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="ai">
+      <div class="doc-h2">AI OPTIMIZER</div>
+      <p class="doc-p">The AI optimizer is an off-chain agent that monitors on-chain data and submits allocation decisions as transactions. Its inputs include real-time APY data, TVL depth, counterparty risk scores, and gas prices.</p>
+      <p class="doc-p">The optimizer runs on an <strong>hourly cycle</strong>. If market conditions change significantly (e.g., sudden liquidity drain, APY spike), it can trigger an immediate rebalance. All decisions are recorded on-chain.</p>
+      <div class="code-block">
+        <div class="code-label">// Optimizer Decision Structure (simplified)</div>
+        <pre>{
+  <span class="k">timestamp</span>: <span class="s">1719432000</span>,
+  <span class="k">vault</span>: <span class="s">"stable"</span>,
+  <span class="k">allocations</span>: {
+    <span class="v">morpho_usdc</span>: <span class="s">0.42</span>,     <span class="c">// 42%</span>
+    <span class="v">aerodrome_lp</span>: <span class="s">0.35</span>,    <span class="c">// 35%</span>
+    <span class="v">ondo_tbill</span>: <span class="s">0.23</span>        <span class="c">// 23%</span>
+  },
+  <span class="k">risk_score</span>: <span class="s">2.1</span>,           <span class="c">// 0-10 scale</span>
+  <span class="k">expected_apy</span>: <span class="s">0.112</span>,      <span class="c">// 11.2%</span>
+  <span class="k">tx_hash</span>: <span class="s">"0xabc..."</span>
+}</pre>
+      </div>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="security">
+      <div class="doc-h2">SECURITY & CONTRACTS</div>
+
+      <div class="doc-h3" style="margin-top:0px">MAINNET Contracts (Robinhood Chain)</div>
+      <table class="doc-table">
+        <thead><tr><th>Component</th><th>Address (BaseScan)</th></tr></thead>
+        <tbody>
+          <tr><td>$vsUSD Token</td><td><a href="https://robinhoodchain.blockscout.com" class="doc-link" target="_blank" rel="noopener noreferrer">0x7117dB2D6590309463f278bC550719a36667C26f</a></td></tr>
+          <tr><td>Stable Vault</td><td><a href="https://robinhoodchain.blockscout.com" class="doc-link" target="_blank" rel="noopener noreferrer">0x7117dB2D6590309463f278bC550719a36667C26f</a></td></tr>
+          <tr><td>Boost Vault</td><td><a href="https://robinhoodchain.blockscout.com" class="doc-link" target="_blank" rel="noopener noreferrer">0x7117dB2D6590309463f278bC550719a36667C26f</a></td></tr>
+          <tr><td>Alpha Vault</td><td><a href="https://robinhoodchain.blockscout.com" class="doc-link" target="_blank" rel="noopener noreferrer">0x7117dB2D6590309463f278bC550719a36667C26f</a></td></tr>
+        </tbody>
+      </table>
+
+      <div class="doc-h3" style="margin-top:40px">Protocol Security</div>
+      <table class="doc-table">
+        <thead><tr><th>Property</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Custody</td><td>Non-custodial — users retain key control at all times</td></tr>
+          <tr><td>Admin mint</td><td>Disabled — $vsUSD only minted with USDG collateral</td></tr>
+          <tr><td>Circuit breaker</td><td>Multisig-controlled emergency pause on all vaults</td></tr>
+          <tr><td>Auditability</td><td>All AI decisions are on-chain transactions</td></tr>
+          <tr><td>Contract Audit</td><td><a href="/audit" class="doc-link">In progress — targeted Q3 2026</a></td></tr>
+          <tr><td>Bug Bounty</td><td>Planned — details TBA</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="integrations">
+      <div class="doc-h2">INTEGRATIONS</div>
+      <table class="doc-table">
+        <thead><tr><th>Protocol</th><th>Type</th><th>Vault</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Morpho</td><td>Lending</td><td>Stable, Boost</td><td style="color:var(--lime)">Live</td></tr>
+          <tr><td>Aerodrome</td><td>LP / AMM</td><td>Stable, Boost</td><td style="color:var(--lime)">Live</td></tr>
+          <tr><td>Ondo Finance</td><td>RWA / T-Bills</td><td>Boost</td><td style="color:var(--lime)">Live</td></tr>
+          <tr><td>Centrifuge</td><td>Private Credit</td><td>Boost</td><td style="color:var(--gold)">MAINNET</td></tr>
+          <tr><td>x402 Protocol</td><td>Agentic Commerce</td><td>Alpha</td><td style="color:var(--gold)">MAINNET</td></tr>
+          <tr><td>BTCFi (cbBTC)</td><td>BTC Yield</td><td>Alpha</td><td style="color:var(--gold)">MAINNET</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="faq">
+      <div class="doc-h2">FAQ</div>
+
+      <div style="margin-bottom:28px">
+        <div class="doc-h3">Is Vaulta audited?</div>
+        <p class="doc-p">An independent smart contract audit is planned before mainnet launch (Q3 2026). The audit report will be published publicly. The MAINNET contracts are unaudited.</p>
+      </div>
+      <div style="margin-bottom:28px">
+        <div class="doc-h3">Can I lose money?</div>
+        <p class="doc-p">Yes. While the Stable Vault is designed for capital preservation, all DeFi interactions carry smart contract risk, liquidity risk, and protocol risk. The Alpha Vault has additional exposure from perp funding strategies. Never deposit more than you can afford to lose.</p>
+      </div>
+      <div style="margin-bottom:28px">
+        <div class="doc-h3">How is APY calculated?</div>
+        <p class="doc-p">APY figures are estimates based on current protocol conditions: lending rates on Morpho, LP fees on Aerodrome, T-bill yields via Ondo, and funding rates on perp markets. These fluctuate constantly. The AI optimizer dynamically rebalances toward the best available rate.</p>
+      </div>
+      <div style="margin-bottom:28px">
+        <div class="doc-h3">What is x402?</div>
+        <p class="doc-p"><strong>x402</strong> is an open protocol for HTTP-native micropayments, enabling AI agents to pay for resources autonomously using crypto. Vaulta's Alpha Vault routes idle capital into x402 payment flows — generating yield from agentic commerce infrastructure. This is one of the highest-conviction 2026 narratives.</p>
+      </div>
+      <div>
+        <div class="doc-h3">Is there a token?</div>
+        <p class="doc-p"><strong>$vsUSD</strong> is the protocol's yield-bearing stablecoin. There is no separate governance token at launch. DAO governance is planned for Phase 3 (Q1 2027) — details will be published when available.</p>
+      </div>
+    </div>
+
+    <hr class="doc-sep">
+
+    <div class="doc-section" id="roadmap">
+      <div class="doc-h2">ROADMAP</div>
+      <table class="doc-table">
+        <thead><tr><th>Phase</th><th>Timeline</th><th>Milestone</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Phase 1</td><td>Q2 2026</td><td>MAINNET live (Robinhood Chain)</td><td style="color:var(--lime)">✓ Live</td></tr>
+          <tr><td>Phase 2</td><td>Q3 2026</td><td>Mainnet launch — Stable Vault. $500K TVL target</td><td style="color:var(--gold)">Upcoming</td></tr>
+          <tr><td>Phase 3</td><td>Q4 2026</td><td>Boost Vault + AI dashboard. $5M TVL target</td><td style="color:var(--fog)">Planned</td></tr>
+          <tr><td>Phase 4</td><td>Q1 2027</td><td>Alpha Vault + x402 + DAO governance. $25M+ TVL</td><td style="color:var(--fog)">Planned</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /docs-main -->
+</div><!-- /docs-layout -->
+
+<script>
+// Sidebar active link tracking
+const links = document.querySelectorAll('.sb-link');
+const sections = document.querySelectorAll('.doc-section');
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector('.sb-link[href="#'+e.target.id+'"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.4, rootMargin: '-20% 0px -60% 0px' });
+
+sections.forEach(s => obs.observe(s));
+
+  // â”€â”€ CLEAN URL SCROLL â”€â”€
+  document.querySelectorAll('a[href^="/#"], a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      const id = href.substring(href.indexOf('#') + 1);
+      const target = document.getElementById(id);
+      
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }
+    });
+  });
+
+  if (window.location.hash) {
+    const target = document.getElementById(window.location.hash.substring(1));
+    if (target) {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }, 100);
+    }
+  }
+</script>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <img src="https://www.vaulta.works/logo.png" alt="Vaulta"/> VAULTA
+      </a>
+      <p>Autonomous Yield Infrastructure on Robinhood Chain. Non-custodial. Audited. AI-powered.</p>
+      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="https://x.com/vaultaworks" class="team-link" target="_blank">Twitter/X</a>
+        <a href="https://github.com/vaultaworks/vaulta" class="team-link" target="_blank">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>PROTOCOL</h4>
+        <a href="#vaults">Vaults</a>
+        <a href="#ai">AI Engine</a>
+        <a href="#security">Security</a>
+        <a href="#roadmap">Roadmap</a>
+      </div>
+      <div class="footer-col">
+        <h4>RESOURCES</h4>
+        <a href="https://www.vaulta.works/docs" target="_blank">Documentation</a>
+        <a href="https://www.vaulta.works/audit" target="_blank">Audit Report</a>
+        <a href="https://github.com/vaultaworks/vaulta" target="_blank">GitHub</a>
+        <a href="https://solscan.io" target="_blank">Solscan Explorer</a>
+      </div>
+      <div class="footer-col">
+        <h4>LEGAL</h4>
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/risk">Risk Disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Vaulta Protocol · MIT License · Built on Robinhood Chain</span>
+    <div class="footer-legal">
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/risk">Risk Disclosure</a>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="walletModal" onclick="closeWalletOnBg(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>CONNECT WALLET</h3>
+      <button class="modal-close" onclick="closeWallet()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="wallet-option" onclick="connectWallet('MetaMask')">
+        <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAANlBMVEX///+rn/Kom/L39v7s6fzFvfavpPOzqPPj3/ry8P3UzvjZ1Pm4rvS+tfXQyfff2/qjlfHMxfcaWeyPAAADLElEQVR4nO2a25arIAyGaxBUBJX3f9kpWjzUAxBj98XOdzOra9Q/hBBC9PViGIZhGIZhGIZhCBGl1lpKK6XTffNj8aaXBUx8/g6uFz9T77x68QWA0b/wg2iNKnbqH1T9tHzZwX7sazdUjzpBOHWlPlpgnrOglkNMfjThqWnQ0dEHHvFBXSWqv3lgFppuSNcvQFLrt1Wq9z/QhoHQmfLvfEA5CaXJlX/T0en3ycG/xpDtCxKh/gZKGnkhMcP30CwEYbD6BVDoNxatTzIHTWT1w2ZXhmL7UxPoX8vbtm7nEAXV1a1e3XE/G8b0p4Tfh9+jx8vVPfbmQmwu5YsiFB5u9Dv0068edhdg9SPpD1y4UI1qYbhqvkLdisLo+oMwPuG9DnPmXd13xwARX3+zAd5V0IY7u/nGO4VRgv48w8JuDGhJDEjIv8sUeKcvi15SGFAnVD/z44VXXGLA7q/I11fnusvjq82Q1WcV1Ivv0AY0Kfrz88Wk+Ml7whEYkLoBKx94c+oD2/jNe30Bchmm139Q2PVuNUizObRVOAPqVPlDi9YgDweoAvDQGpwBHZU+cjuObMFZBri43B46fdwqrMkmYJWr/5F+USAc4AjlMTFYUjoAEIdDzBn0FJVfkpI6AFMT2/hT0wlVco4DKPUxJfGNY+ABNt8BOU2oKEuRmkxL6oAhPw0S7gKojaiPPzUDRAiiOzFHIBwg0irhVAPyk1BP6gDEPkQ6A5hmOekM5OeAV0NZCZl8fdJSCHUecXQGIJLwKyEGzUmiBPlVxeCK8SbWEBrK4ygF+fUPwDXJYx2xQp/kCRDbMgokrjcYM8CdHZnb18YDgO1Nnjg4oE6i1MebWBVy4LC90WsD/OvgIw9M8TavYDD4ptS1Ab68PIiBEO92GF/eV/pGa/jKgGldH6TKeb01fdfpey8HLoIwNJ++a3Zcvjlj9/iFsK62FRMYoldSgdNUrI8ugaql/lbjLM+s3rqITvkeGMBAL//mUL7arivROym79pnPE/a9KQBLPM/XfO+Hd9IKCiE3R7NbaQVJrz7fJYEy9e/lPU3duu7332QxDMMwDMMwDMP8b/wBUiAehtejN6UAAAAASUVORK5CYII=' class="wallet-icon" style="width:28px; height:28px; border-radius:6px; margin-right:16px;">
+        <div>
+          <div class="wallet-name">MetaMask</div>
+          <div class="wallet-desc">Most popular EVM browser wallet</div>
+        </div>
+      </div>
+      <div class="wallet-option" onclick="connectWallet('WalletConnect')">
+        <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAARVBMVEVHcEz/70aYqAb/70b/70b/70b/70b/70b/70b/70YBBQsAAAn/9Ef05UPOwTrj1j+Xjy0iIxG0qTQ8OhdSTxxoYyGAeSeOJxegAAAACnRSTlMAn///hqQN2DJioIP/kgAAB0VJREFUeJzNW2mXqyAM7Rxnusgi4vL/f+pL2ESFgHamPj7NmbbmGrLcJHC77df9/nx9PR7NL67H4+v1vN8Twvbr+fr5VdkRip/Xsyz++4+kOwzfNIQ/Fl+E8Ppz8QbCKyf/5xPicf2k1f+R17frkdiGT8pPIfis/D2CT8vfIfi4fEBwif3HK/KF1xXymybEg88bgF3BDL6vkd8039cqIKjgMgU4FVynAKeCsy7ARcPfRgCOcD8VA3jTyVnLjr+J4et+u5/ZAd6pqWWsn5QWb2F43G/PE+KFGhljLUBoAYNs3sDwPG4CnOvBiDcL/urHGbbiJIbX7evoT+S4iHcQAITqztnk18E8CJvfrsQ7EPDPQXVdCkM3SgLZ4xgALqeE+KCIUcktBg4K6wkEj9sh+bD7afGLPSi98k3csHaQ+WceAqB6Sr5TA9hk8E2LmLGp+xUAyux1AYPRwzBJ9AuuW2YsROcfWg9AKJDNxr4KAwidpZjtN3tNWGE9ACO/FRADhwoM5ivmW6QN1gPg2oY+tDCp5qECglsDKb8WAJfG/hhDbXIupJ77KgyMjAL1AMRkhLFWOfNuRKcxJJYwUB54AIAzZ0AwR+8DGAZGgmBF+ZUAutELGSMAHDdDEX7Bxq6YH6oAWAu0ryQ2H3HkBkNKD6xGfh0AcGj/1JRPp/0C419FfqwC0A1L+p9TXzB+Ma38goy/BwFw2S4Pzrl18Itj8isBxG+W31iO8drmK5AvMt96FwCYgcyTn27y8mv50QkALZuQd6QEdJavZCzlNIDICN3+MuQdu3f0fAkyYaX+KwHwJQ4tEGLesf4axOt6+RUAOLzYngl57rNsBZeD2/8D71+lAZWL9wbELLfy1SF+XgQAzwVm0SfZIGMOAxQF0tuJOlYeFABYv2aDVrl8Y2AMyvFlqFAOlic0AMvqWK8tI8utsEeA9Jj4EoDJ8jDj1brNIwjqOLb/JQDcs1ob/rdFYWoNkz5YKxMAuNM6mzwN02U+DB9P8nfc0PtVywIFAAhFTm7MAf3i7VwQWAiLEjDwHz2XySj6xa5OPQggKGAFAD+AvF+uC+BjqJUrzCGvgYUH7liYwVCuC9gwlyHkAahAw8YUDRRCZ3sFizn0c4kXZgEsRJRliksgglNFmapoc6wBAPEt+RDh/ZTcDCBnp4pToZaHYg9qt5ncV99snEfKN2l6XmEDjgJt2oGRfNl0WuXDJF0gEG4Yx37MeFOshpV84xdS5XwTKEI+NuY1sOFh+Ox+VI6Fof25/GvpP/5XSOObiS4e0aMgQrHePso0PQaNLclAf4c43JlCcUg0EgmWRiSjLuVkph2opaf/487CuTA12uZHfbZMorKhTHcFjSLsH6nyi/N9iGIs2ycgCYnM9QXdvzPWjRuxKWWAqZ4BwE2fM7sw5aXpBxTs22LqFACcDFBhDluScwbDGgEbzwHAcmcmKAhz9EMkytUVhzwPoLEtmFSPPlZEggL5SPUuAHTuRhYpCOT+dZt87URnbWAB4VqThBZaoEBrr5gjAOe8YIWhEd1M6QAxDHHy53rx4pNxYANB+/YLoYkhUoKIelvZfHgAgPbpZxyyfBD+v+QdHtIZ0TGq3wLvVkDQkJrnMESZj/tkwli+ZKwGEN4fn8U9BUmlq9G/LQ+VBdGyrwXg97/374LT4wwF8RV60EBL9KwqAYT2X2zNSIPmhE36Dfc2QCmgrkklQnLbFEkmSO1KFG8FXWjavDkzcvJZ+k24nWXHnmDrCK4cbchGwVoAnv6PuWgCDDVmDi7shbKFLI7KySiUH+T0SUcU1jJAF7fYvrQ8BIAvSa3fdiZX34umuoapcUspCS5UBYDHSRXpR/bQht9xs1dIFd2cr9S1LDCiblqblzkpkIE6xgB4Z/p75akJzQn3zBzHoaNOnVbgwVdxpGAssGZqQ3bJkpWBKdPmfbN8qeUQgK0sK6ZGVF2Qlm8xAPvYmqToFwDaTI7pwrwIoKM6IMwc4pGrwiwAmDByg/29NTXD7n+5AzOqqF8fulq9lV/VLswBwGm1nX7QEEDP2ueeiABl+zq1AMK0vNwKs6Qc57gxCx4q5WcAOEoNTq9GigsHeWAOoukXDUyFoX0BgJePTAqoT/m0gjXJYIR15kcACPLxMebgXMVpBRbCQP/m0Crof8m+QpROCrTeXpE1HBkaJDWgTF9stY32pECNHqpnpgQARLA7+2FOr0w0BuyS/8rMSKhkFMfuixrzlTJa/zHxACB9mE3kzJhg4zgyqrd+tw6epvPo5LRvWoAnytoxSQzg8IFGB8Ie4lnYkon9x480fp0/1cu7yC1Yfexdr9eZQ60BQnCLisFEZj3PHetdQFi3yAwUyj9/3E8ebI6egdmiOvVs18/9F2434MnFs799/Q+H2y8/3n/9BYf71Vc8rr/kcvk1n+svOl1/1ev6y26XX/e7/sLj/fIrn5/0hfSl19v1136vv/j89xBK4g2Eay+/4/ro9f9/bhNOaYIBRZIAAAAASUVORK5CYII=' class="wallet-icon" style="width:28px; height:28px; border-radius:6px; margin-right:16px;">
+        <div>
+          <div class="wallet-name">WalletConnect</div>
+          <div class="wallet-desc">Multi-chain connection protocol</div>
+        </div>
+      </div>
+      <div class="wallet-option" onclick="connectWallet('CoinbaseWallet')">
+        <img src='data:image/png;base64,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' class="wallet-icon" style="width:28px; height:28px; border-radius:6px; margin-right:16px;">
+        <div>
+          <div class="wallet-name">Coinbase Wallet</div>
+          <div class="wallet-desc">Self-custody wallet for Robinhood Chain</div>
+        </div>
+      </div>
+      <p class="modal-note">
+        By connecting, you agree to our <a href="/terms">Terms of Service</a> and <a href="/risk">Risk Disclosure</a>.<br/>
+        Vaulta is non-custodial — your keys stay yours.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── TICKER ──
+  const tickerItems = [
+    { label: 'STABLE VAULT', val: '+11.2% APY', cls: 'pos' },
+    { label: 'BOOST VAULT',  val: '+18.7% APY', cls: 'pos' },
+    { label: 'ALPHA VAULT',  val: '+33.4% APY', cls: 'pos' },
+    { label: 'VAULTA TVL',   val: '$2.14M',     cls: 'val' },
+    { label: '$vsUSD HOLDERS', val: '3,104',    cls: 'val' },
+    { label: 'AI REBALANCES', val: '1,847 TODAY', cls: 'val' },
+    { label: 'MORPHO',       val: 'LIVE ●',      cls: 'pos' },
+    { label: 'AERODROME',    val: 'LIVE ●',      cls: 'pos' },
+    { label: 'x402 PROTOCOL',val: 'INTEGRATED',  cls: 'val' },
+    { label: 'ONDO FINANCE', val: 'LIVE ●',      cls: 'pos' },
+    { label: 'NETWORK',      val: 'Robinhood Chain', cls: 'val' },
+    { label: 'AUDIT',        val: 'OtterSec ✓',  cls: 'pos' },
+  ];
+
+  function buildTicker() {
+    const wrap = document.getElementById('ticker');
+    const html = tickerItems.map(t =>
+      `<span class="ticker-item"><span class="ticker-dot"></span><span class="label">${t.label}</span><span class="${t.cls}">${t.val}</span></span>`
+    ).join('');
+    wrap.innerHTML = html + html; // duplicate for seamless loop
+  }
+  buildTicker();
+
+  // ── LIVE COUNTER ──
+  let rebalCount = 1847;
+  setInterval(() => {
+    rebalCount++;
+    const fmt = rebalCount.toLocaleString();
+    const el1 = document.getElementById('stat-rebalances');
+    const el2 = document.getElementById('term-rebal');
+    if (el1) el1.textContent = fmt;
+    if (el2) el2.textContent = fmt;
+  }, 4200);
+
+  // ── TERMINAL TIME ──
+  let secs = 4;
+  setInterval(() => {
+    secs = Math.floor(Math.random() * 8) + 1;
+    const el = document.getElementById('term-time');
+    if (el) el.textContent = secs + 's ago';
+  }, 3000);
+
+  // ── WALLET MODAL ──
+  function openWallet() {
+    document.getElementById('walletModal').classList.add('open');
+  }
+  function closeWallet() {
+    document.getElementById('walletModal').classList.remove('open');
+  }
+  function closeWalletOnBg(e) {
+    if (e.target === document.getElementById('walletModal')) closeWallet();
+  }
+      async function connectWallet(name) {
+    closeWallet();
+    const btn = document.querySelector('nav .btn-primary, .nav-right .btn-primary');
+    if (!btn) return;
+    
+    btn.textContent = 'Connecting...';
+    try {
+      let pubKey = '';
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        pubKey = accounts[0];
+      } else {
+        // Fallback simulation if extension not installed
+        await new Promise(r => setTimeout(r, 800));
+        const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        for (let i = 0; i < 44; i++) pubKey += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      
+      const short = pubKey.slice(0, 4) + '...' + pubKey.slice(-4);
+      btn.textContent = short;
+      btn.style.background = 'rgba(20,255,180,0.1)';
+      btn.style.color = '#14ffb4';
+      btn.style.borderColor = 'rgba(20,255,180,0.3)';
+    } catch (err) {
+      btn.textContent = 'CONNECT WALLET';
+      console.error('Wallet connection failed:', err);
+    }
+  }
+
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.vault-card, .ai-card, .step, .team-card, .sec-card, .rm-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+
+  // â”€â”€ CLEAN URL SCROLL â”€â”€
+  document.querySelectorAll('a[href^="/#"], a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      const id = href.substring(href.indexOf('#') + 1);
+      const target = document.getElementById(id);
+      
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }
+    });
+  });
+
+  if (window.location.hash) {
+    const target = document.getElementById(window.location.hash.substring(1));
+    if (target) {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }, 100);
+    }
+  }
+</script>
+</body>
+</html>
+
+

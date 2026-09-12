@@ -1,0 +1,1083 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAULTA — App</title>
+  <meta name="description" content="Simulate Vaulta deposits on Robinhood Chain MAINNET.">
+  <meta property="og:title" content="VAULTA — App">
+  <meta property="og:description" content="Simulate Vaulta deposits on Robinhood Chain MAINNET.">
+  <meta property="og:image" content="https://vaulta.works/og-image.jpg">
+  <meta property="og:url" content="https://vaulta.works/app">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VAULTA — App">
+  <meta name="twitter:description" content="Simulate Vaulta deposits on Robinhood Chain MAINNET.">
+  <meta name="twitter:image" content="https://vaulta.works/og-image.jpg">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0c0f;
+      --bg2: #0f1217;
+      --bg3: #151a22;
+      --border: rgba(255,255,255,0.07);
+      --border-glow: rgba(20,255,180,0.25);
+      --green: #14ffb4;
+      --green-dim: rgba(20,255,180,0.12);
+      --green-mid: rgba(20,255,180,0.35);
+      --white: #f0f4f8;
+      --muted: #6b7685;
+      --text: #c8d4e0;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --radius: 12px;
+      --radius-lg: 20px;
+
+      /* Mapped legacy app variables */
+      --surface: var(--bg2);
+      --border2: var(--border);
+      --dim: rgba(255,255,255,0.1);
+      --green-border: var(--border-glow);
+      --yellow: #f5c518;
+      --red: #ff4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .network-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .network-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    #connectBtn {
+      padding: 8px 20px;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    #connectBtn:hover { opacity: 0.85; }
+    #connectBtn.connected {
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    /* WALLET STATUS BANNER */
+    #walletBanner {
+      display: none;
+      padding: 10px 32px;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-align: center;
+    }
+    #walletBanner.warning {
+      display: block;
+      background: rgba(245,197,24,0.08);
+      border-bottom: 1px solid rgba(245,197,24,0.2);
+      color: var(--yellow);
+    }
+    #walletBanner.error {
+      display: block;
+      background: rgba(255,68,68,0.08);
+      border-bottom: 1px solid rgba(255,68,68,0.2);
+      color: var(--red);
+    }
+    #walletBanner.success {
+      display: block;
+      background: var(--green-dim);
+      border-bottom: 1px solid var(--green-border);
+      color: var(--green);
+    }
+
+    /* MAIN LAYOUT */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+    }
+    @media (max-width: 768px) {
+      main { grid-template-columns: 1fr; padding: 24px 16px; }
+      nav { padding: 12px 16px; }
+    }
+
+    /* VAULT SELECTOR */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .vault-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .vault-tab {
+      padding: 16px 12px;
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+    }
+    .vault-tab:hover { border-color: var(--dim); }
+    .vault-tab.active {
+      border-color: var(--green);
+      background: var(--green-dim);
+    }
+    .vault-tab-name {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .vault-tab.active .vault-tab-name { color: var(--green); }
+    .vault-tab-apy {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .vault-tab-risk {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* DEPOSIT FORM */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      overflow: hidden;
+      background: #050505;
+    }
+    .input-wrap:focus-within { border-color: var(--green); }
+    .input-prefix {
+      padding: 12px 14px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+      border-right: 1px solid var(--border2);
+    }
+    .input-wrap input {
+      flex: 1;
+      padding: 12px 14px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 16px;
+    }
+    .input-max {
+      padding: 8px 14px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--green);
+      cursor: pointer;
+      letter-spacing: 0.1em;
+    }
+    .quick-amounts {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .quick-btn {
+      padding: 5px 10px;
+      border: 1px solid var(--border2);
+      border-radius: 3px;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .quick-btn:hover { border-color: var(--dim); color: var(--text); }
+
+    /* PROJECTION */
+    .projection {
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .proj-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .proj-row:last-child { border-bottom: none; }
+    .proj-label { font-size: 12px; color: var(--muted); }
+    .proj-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+    }
+    .proj-value.green { color: var(--green); }
+
+    /* ACTION BTN */
+    #depositBtn {
+      width: 100%;
+      padding: 16px;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #depositBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+    #depositBtn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+    #depositBtn.simulating {
+      background: var(--green);
+      animation: btnPulse 1s infinite;
+    }
+    @keyframes btnPulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+    .deposit-note {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    /* RIGHT PANEL */
+    .right-panel { display: flex; flex-direction: column; gap: 16px; }
+
+    /* WALLET INFO CARD */
+    .wallet-card { }
+    .wallet-addr {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--green);
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+    .wallet-network {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .wallet-network.wrong { color: var(--yellow); }
+
+    #switchNetworkBtn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--yellow);
+      border-radius: 4px;
+      color: var(--yellow);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: none;
+    }
+    #switchNetworkBtn:hover { background: rgba(245,197,24,0.08); }
+
+    /* LIVE DATA */
+    .live-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .live-row:last-child { border-bottom: none; }
+    .live-key { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+    .live-val { font-family: var(--mono); font-size: 12px; color: var(--text); }
+    .live-val .badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin-left: 6px;
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+
+    /* SIMULATION MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      margin: 0 16px;
+    }
+    .modal-title {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .sim-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+    .sim-step:last-child { border-bottom: none; }
+    .sim-step.active { opacity: 1; }
+    .sim-step.done { opacity: 0.6; }
+    .step-num {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+    .sim-step.active .step-num { border-color: var(--green); color: var(--green); }
+    .sim-step.done .step-num { background: var(--green); color: var(--bg); border-color: var(--green); }
+    .step-text { font-size: 13px; }
+    .step-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .modal-close {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: var(--green);
+      color: var(--bg);
+      border: none;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      display: none;
+    }
+    
+    /* WALLET SELECT MODAL */
+    .wallet-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .wallet-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .wallet-option:hover {
+      border-color: var(--green);
+      background: var(--green-dim);
+    }
+    .wallet-option-name {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .wallet-option-status {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .modal-x {
+      position: absolute; top: 18px; right: 18px;
+      background: none; border: none; color: var(--muted);
+      font-size: 18px; cursor: pointer; width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s;
+    }
+    .modal-x:hover { color: var(--text); }
+  
+/* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 48px 32px;
+      display: flex; flex-direction: column; gap: 32px;
+    }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .footer-brand { max-width: 280px; }
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 14px; font-weight: 700;
+      color: var(--white); margin-bottom: 12px; text-decoration: none;
+    }
+    .footer-logo img { width: 24px; }
+    .footer-brand p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+    .footer-cols { display: flex; gap: 64px; }
+    .footer-col h4 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 16px; }
+    .footer-col a {
+      display: block; font-size: 13px; color: var(--text);
+      text-decoration: none; margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--green); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 24px; border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em;
+    }
+    .footer-legal { display: flex; gap: 24px; }
+    .footer-legal a { color: var(--muted); text-decoration: none; }
+    .footer-legal a:hover { color: var(--white); }
+
+    
+
+/* ── WALLET MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); width: 440px; overflow: hidden;
+      transform: translateY(20px); transition: transform 0.25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-family: var(--mono); font-size: 14px; color: var(--white); }
+    .modal-close {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 20px; line-height: 1; padding: 0; transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--white); }
+    .modal-body { padding: 24px; }
+    .wallet-option {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 10px; cursor: pointer;
+      background: var(--bg3); transition: border-color 0.2s;
+    }
+    .wallet-option:hover { border-color: var(--border-glow); }
+    .wallet-icon { font-size: 22px; width: 32px; text-align: center; }
+    .wallet-name { font-family: var(--mono); font-size: 13px; color: var(--white); }
+    .wallet-desc { font-size: 11px; color: var(--muted); }
+    .modal-note {
+      margin-top: 16px; font-size: 11px; color: var(--muted); text-align: center;
+      line-height: 1.5;
+    }
+    .modal-note a { color: var(--green); text-decoration: none; }
+
+    
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="https://www.vaulta.works/logo.png" alt="Vaulta"/>
+    VAULTA
+  </a>
+  <div class="nav-links">
+    <a href="/#how">Protocol</a>
+    <a href="/#vaults">Vaults</a>
+    <a href="/#ai">AI Engine</a>
+    <a href="/#security">Security</a>
+    <a href="/#roadmap">Roadmap</a>
+    <a href="https://www.vaulta.works/docs" target="_blank">Docs</a>
+  </div>
+  <div class="nav-right">
+    <div class="badge-live">MAINNET · ROBINHOOD CHAIN</div>
+    <button id="connectBtn" class="btn-primary" onclick="handleConnect()">CONNECT WALLET</button>
+  </div>
+</nav>
+
+<div id="walletBanner"></div>
+
+<main>
+  <!-- LEFT: DEPOSIT -->
+  <div>
+    <div class="section-label">Select Vault</div>
+    <div class="vault-tabs">
+      <div class="vault-tab active" onclick="selectVault(0, this)">
+        <div class="vault-tab-name">STABLE VAULT</div>
+        <div class="vault-tab-apy">11.2%</div>
+        <div class="vault-tab-risk">Low Risk</div>
+      </div>
+      <div class="vault-tab" onclick="selectVault(1, this)">
+        <div class="vault-tab-name">BOOST VAULT</div>
+        <div class="vault-tab-apy">18.7%</div>
+        <div class="vault-tab-risk">Med Risk</div>
+      </div>
+      <div class="vault-tab" onclick="selectVault(2, this)">
+        <div class="vault-tab-name">ALPHA VAULT</div>
+        <div class="vault-tab-apy">33.4%</div>
+        <div class="vault-tab-risk">High Risk</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">// SIMULATE DEPOSIT · Robinhood Chain · NO REAL FUNDS</div>
+
+      <div class="input-group">
+        <div class="input-label">DEPOSIT AMOUNT</div>
+        <div class="input-wrap">
+          <span class="input-prefix">USDG</span>
+          <input type="number" id="amountInput" placeholder="1000" min="0" oninput="updateProjection()">
+          <span class="input-max" onclick="document.getElementById('amountInput').value=10000;updateProjection()">MAX</span>
+        </div>
+        <div class="quick-amounts">
+          <button class="quick-btn" onclick="setAmount(100)">$100</button>
+          <button class="quick-btn" onclick="setAmount(500)">$500</button>
+          <button class="quick-btn" onclick="setAmount(1000)">$1K</button>
+          <button class="quick-btn" onclick="setAmount(5000)">$5K</button>
+          <button class="quick-btn" onclick="setAmount(10000)">$10K</button>
+        </div>
+      </div>
+
+      <div class="projection">
+        <div class="proj-row">
+          <span class="proj-label">$vsUSD Received</span>
+          <span class="proj-value" id="vsUSD">1,000.00</span>
+        </div>
+        <div class="proj-row">
+          <span class="proj-label">Projected Yield (12mo)</span>
+          <span class="proj-value green" id="projYield">+$112.00</span>
+        </div>
+        <div class="proj-row">
+          <span class="proj-label">Total at Maturity</span>
+          <span class="proj-value" id="projTotal">$1,112.00</span>
+        </div>
+        <div class="proj-row">
+          <span class="proj-label">vs. Savings (4%)</span>
+          <span class="proj-value green" id="projVsSavings">+$72.00 more</span>
+        </div>
+      </div>
+
+      <button id="depositBtn" onclick="handleDeposit()">DEPOSIT ON MAINNET</button>
+      <div class="deposit-note">* Simulation only · No real USDG required · Robinhood Chain MAINNET</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <!-- WALLET STATUS -->
+    <div class="card wallet-card" id="walletCard" style="display:none">
+      <div class="card-title">// WALLET</div>
+      <div class="wallet-addr" id="walletAddr"></div>
+      <div class="wallet-network" id="walletNetwork"></div>
+      <button id="switchNetworkBtn" onclick="switchToBaseMainnet()">⚡ SWITCH TO Robinhood Chain</button>
+    </div>
+
+    <!-- LIVE DATA -->
+    <div class="card">
+      <div class="card-title">// LIVE PROTOCOL DATA</div>
+      <div class="live-row">
+        <span class="live-key">STABLE APY</span>
+        <span class="live-val">11.2% <span class="badge">LIVE</span></span>
+      </div>
+      <div class="live-row">
+        <span class="live-key">BOOST APY</span>
+        <span class="live-val">18.7% <span class="badge">LIVE</span></span>
+      </div>
+      <div class="live-row">
+        <span class="live-key">ALPHA APY</span>
+        <span class="live-val">33.4% <span class="badge">LIVE</span></span>
+      </div>
+      <div class="live-row">
+        <span class="live-key">AI REBALANCES</span>
+        <span class="live-val" id="rebalanceCount">1,847</span>
+      </div>
+      <div class="live-row">
+        <span class="live-key">NETWORK</span>
+        <span class="live-val">Robinhood Chain</span>
+      </div>
+      <div class="live-row">
+        <span class="live-key">CHAIN ID</span>
+        <span class="live-val">4663</span>
+      </div>
+    </div>
+
+    <!-- BACK LINK -->
+    <a href="/" style="font-family:var(--mono);font-size:11px;color:var(--muted);text-decoration:none;text-align:center;display:block;">← Back to vaulta.works</a>
+  </div>
+</main>
+
+<!-- SIMULATION MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title">// DEPOSIT SIMULATION · ROBINHOOD CHAIN</div>
+    <div class="sim-step" id="step1">
+      <div class="step-num">01</div>
+      <div>
+        <div class="step-text">Connect Wallet</div>
+        <div class="step-sub">Handshake with Robinhood Chain...</div>
+      </div>
+    </div>
+    <div class="sim-step" id="step2">
+      <div class="step-num">02</div>
+      <div>
+        <div class="step-text">Approve USDG</div>
+        <div class="step-sub">Token program approval (simulated gas fee)</div>
+      </div>
+    </div>
+    <div class="sim-step" id="step3">
+      <div class="step-num">03</div>
+      <div>
+        <div class="step-text">Deposit & Mint $vsUSD</div>
+        <div class="step-sub">Minting yield-bearing $vsUSD 1:1...</div>
+      </div>
+    </div>
+    <div class="sim-step" id="step4">
+      <div class="step-num">04</div>
+      <div>
+        <div class="step-text">AI Routing Capital</div>
+        <div class="step-sub">Optimizer allocating to best yield...</div>
+      </div>
+    </div>
+    <button class="modal-close" id="modalClose" onclick="closeModal()">✓ DEPOSIT SIMULATED — CLOSE</button>
+  </div>
+</div>
+
+<!-- WALLET CONNECT MODAL -->
+<div class="modal-overlay" id="walletModalOverlay">
+  <div class="modal" style="position: relative;">
+    <button class="modal-x" onclick="closeWalletModal()">×</button>
+    <div class="modal-title">// CONNECT WALLET</div>
+    <div class="wallet-options">
+      <div class="wallet-option" onclick="simulateWalletConnect('MetaMask')">
+        <div style="display:flex; align-items:center;">
+          <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAANlBMVEX///+rn/Kom/L39v7s6fzFvfavpPOzqPPj3/ry8P3UzvjZ1Pm4rvS+tfXQyfff2/qjlfHMxfcaWeyPAAADLElEQVR4nO2a25arIAyGaxBUBJX3f9kpWjzUAxBj98XOdzOra9Q/hBBC9PViGIZhGIZhGIZhCBGl1lpKK6XTffNj8aaXBUx8/g6uFz9T77x68QWA0b/wg2iNKnbqH1T9tHzZwX7sazdUjzpBOHWlPlpgnrOglkNMfjThqWnQ0dEHHvFBXSWqv3lgFppuSNcvQFLrt1Wq9z/QhoHQmfLvfEA5CaXJlX/T0en3ycG/xpDtCxKh/gZKGnkhMcP30CwEYbD6BVDoNxatTzIHTWT1w2ZXhmL7UxPoX8vbtm7nEAXV1a1e3XE/G8b0p4Tfh9+jx8vVPfbmQmwu5YsiFB5u9Dv0068edhdg9SPpD1y4UI1qYbhqvkLdisLo+oMwPuG9DnPmXd13xwARX3+zAd5V0IY7u/nGO4VRgv48w8JuDGhJDEjIv8sUeKcvi15SGFAnVD/z44VXXGLA7q/I11fnusvjq82Q1WcV1Ivv0AY0Kfrz88Wk+Ml7whEYkLoBKx94c+oD2/jNe30Bchmm139Q2PVuNUizObRVOAPqVPlDi9YgDweoAvDQGpwBHZU+cjuObMFZBri43B46fdwqrMkmYJWr/5F+USAc4AjlMTFYUjoAEIdDzBn0FJVfkpI6AFMT2/hT0wlVco4DKPUxJfGNY+ABNt8BOU2oKEuRmkxL6oAhPw0S7gKojaiPPzUDRAiiOzFHIBwg0irhVAPyk1BP6gDEPkQ6A5hmOekM5OeAV0NZCZl8fdJSCHUecXQGIJLwKyEGzUmiBPlVxeCK8SbWEBrK4ygF+fUPwDXJYx2xQp/kCRDbMgokrjcYM8CdHZnb18YDgO1Nnjg4oE6i1MebWBVy4LC90WsD/OvgIw9M8TavYDD4ptS1Ab68PIiBEO92GF/eV/pGa/jKgGldH6TKeb01fdfpey8HLoIwNJ++a3Zcvjlj9/iFsK62FRMYoldSgdNUrI8ugaql/lbjLM+s3rqITvkeGMBAL//mUL7arivROym79pnPE/a9KQBLPM/XfO+Hd9IKCiE3R7NbaQVJrz7fJYEy9e/lPU3duu7332QxDMMwDMMwDMP8b/wBUiAehtejN6UAAAAASUVORK5CYII=' style='width:24px; height:24px; margin-right:12px; border-radius:4px;'>
+          <div class="wallet-option-name">MetaMask</div>
+        </div>
+        <div class="wallet-option-status" id="status-MetaMask">Detected</div>
+      </div>
+      <div class="wallet-option" onclick="simulateWalletConnect('WalletConnect')">
+        <div style="display:flex; align-items:center;">
+          <img src='data:image/png;base64,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' style='width:24px; height:24px; margin-right:12px; border-radius:4px;'>
+          <div class="wallet-option-name">WalletConnect</div>
+        </div>
+        <div class="wallet-option-status" id="status-WalletConnect"></div>
+      </div>
+      <div class="wallet-option" onclick="simulateWalletConnect('CoinbaseWallet')">
+        <div style="display:flex; align-items:center;">
+          <img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAGJ0lEQVR4nO3dUVLbRhgH8P9fNjN9q1470xBzgjoHqPxxgpIThJwAOIHhBCQnCDlByAlYkgPEPYFVzExf/dgZbH19sOk0xBActLuS9/vN8EKG3Z3sX9JKu1oBxhhjjDHGGGOMMSYJjN2A0MYi+U9APgN6d/+NwPQGKHecm0ZoWhQbH4CJiKCqBiAFij6A/BF/NgUxgvISGdwz55znZkazkQEYi+Tdqjogua/67ZG+LgJlpTzZ6sD94lz59BY2x8YF4Epkj5W+w+OO9LXcBmH7szuru+xYNioAV0VxSvDQdz0KfTPPspNNGCtsRADGInlX9WJ5jQ+DGM3I3baHIIvdgDp0qmoYtPMBQNHvqn4IWqcHrQ/ApCiGIU77Kynkr98lTt01afUlYCzS61b6BR4GfGuYdjO+aOvdQTd2A55iSzFUICdZAnCo8GfVwTQDRh1g+g8wreMa/f+HRwrkrNAH8RuAHlT7M9V3AHafWo9Z05XI/lgk5tGPsUh+JbIXsw3GGGOMMcaspdXPAVYZi+Rby9s1XTHnvy4CJQB0gbKt9/oPaX0AJiKiFf4gtb/GfP+PI5wqR8hwuQWM2h6KVgbgv06H7iPuU8BFICq+n3dw3saJoVYFYCIiUB1CIbHbcheBEoTrkCdtOiu0IgDXIn1VPW1ix6+mx7Mse9uGM0LjAzApigOAb2K3Y10Eyirj0bZz57Hb8pDGBmC5yONDe476++jxs0+fTmK34j6NDMBYpLelelHHgs5GIEZd8mUTxwaNC8DGdf4SgbKTcbdpIWhUAEJ2PslSgSkWP4Cq92cITQxBowIwGQy+eF3bRzpW+Njp4HxVJ1yL9DGHINMDXyEkUN5kfNGUO4TGBGBSFEOAx56Kn1J58utn9+i7iUkhx4AOvbSGOH92efnSS9lrakQAFq9v6YWPsp9y2vV5SaqUR8/XCKQvjVgVzMWauvrLfeI1d8e58obcJfFDf/+QjHp6LRJ2KfuqdsRuwKQohp6ut9M6Blw7zpVKvq6pTV9RT8FfR9QAjEV6JPd9lE2t75n84u1gvq2jrK8o+rHfK4gagG5VvfJx9BMo1xnwPcYswzFubxlrlFGHMVc2Rw2Ar6NfwY91l7nj3NRHuQDyboVoZ4FoAbgSqeXd/ZUy+JmAyeC8lAs98FPu90ULAFVf+Srb144ec/gKAPKJiHgq+0FRAjAW6fma5btdw+eJv6d36umh03dECUAH7Zzi9fr4ViExBoNRApApBr7KVo8TOr47aGuO4O8YRhoDqHgsPPfVUV143oQiU28Hxr1Vhq5wLJL7nu71dYnh3HMAIqx+Ch4A70cR/N1hKP3duQCAAr3Q44DgAfB+FAGAYu9vkV6dRS5v07y3PfQAOXgAlGGWes1UT+ssz9eM5V3ZPOxSuPCDQOJ5kHoUe3VNtHicsfxGqAPkVoS7AA12jcuop9dF8aTrtueVSt8g9edQdQExAqBh3+VT8GzRieu7KorTkJ0PAAr2QtYXfJcwkrmqhq71eDIY7IE8esw8wUREqPpu05amr9LqbeLWouhD9eK6GJQVeM4MHwlMO8B0DuQV0EOFAaH7qDQPHdFY0gnAkgI9Qg9R4VABzJa/b8Tq2Aiirwk0cVkAEmcBSJwFIHEWgMRZABJnAUicBSBxFoDEWQASZwFInAUgcRaAxFkAEmcBSJwFIHEWgMSFfy9AtREbJJqF8G8GKd+HrrNNtELQ/5/gAVhs3sQTH3vvtdyUyqPtz+4sdkOMMcYYY4wxxmysaK/ELT4S0c79An3QDKMY3xgMHoCxSG/5PcDoH0toHGI0I3dDfk8o+JPALcXQOv8ein7oncNjTAZZ5z+E/nZRXSX8ZBAZ93Pv5iu2HiBxFoDEWQASZwFInAUgcRaAxFkAEmcBSJwFIHEWgMRZABJnAUicBSBxFoDEWQASZwFInAUgcRaAxFkAEhd+USgwCl1nmxBahqwvxqdjbYeQByjD7qASPADbzp2DcKHrbQMSZ4/5rmGdoowBZuRr2yLmDmJ0Qx6FrjZKAHacK2/IFwrbMArAFOBJ6FfCbkX/XuJYJO8CfcXmf6b1LgLlDBjF6HhjjDHGGGOMMcYYY4wxxqThX/NzIGSvkklWAAAAAElFTkSuQmCC' style='width:24px; height:24px; margin-right:12px; border-radius:4px;'>
+          <div class="wallet-option-name">Coinbase Wallet</div>
+        </div>
+        <div class="wallet-option-status" id="status-CoinbaseWallet"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── STATE ───────────────────────────────────────────
+  const BASE_Mainnet_CHAIN_ID = '0x1237'; // 4663
+  const BASE_Mainnet_PARAMS = {
+    chainId: BASE_Mainnet_CHAIN_ID,
+    chainName: 'Robinhood Chain',
+    nativeCurrency: { name: 'Ethereum', symbol: 'ETH', decimals: 18 },
+    rpcUrls: ['https://rpc.mainnet.chain.robinhood.com'],
+    blockExplorerUrls: ['https://robinhoodchain.blockscout.com']
+  };
+
+  let walletConnected = false;
+  let walletAddress = null;
+  let currentChainId = null;
+  let currentVaultAPY = 11.2;
+  const vaultAPYs = [11.2, 18.7, 33.4];
+
+  // ─── VAULT SELECT ─────────────────────────────────────
+  function selectVault(idx, el) {
+    document.querySelectorAll('.vault-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentVaultAPY = vaultAPYs[idx];
+    updateProjection();
+  }
+
+  // ─── PROJECTION ──────────────────────────────────────
+  function setAmount(val) {
+    document.getElementById('amountInput').value = val;
+    updateProjection();
+  }
+
+  function updateProjection() {
+    const amt = parseFloat(document.getElementById('amountInput').value) || 1000;
+    const yield12 = amt * (currentVaultAPY / 100);
+    const total = amt + yield12;
+    const savingsYield = amt * 0.04;
+    const diff = yield12 - savingsYield;
+
+    document.getElementById('vsUSD').textContent = fmt(amt);
+    document.getElementById('projYield').textContent = '+$' + fmt(yield12);
+    document.getElementById('projTotal').textContent = '$' + fmt(total);
+    document.getElementById('projVsSavings').textContent = '+$' + fmt(diff) + ' more';
+  }
+
+  function fmt(n) {
+    return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  // ─── WALLET CONNECT ───────────────────────────────────
+  function handleConnect() {
+    if (walletConnected) {
+      // Disconnect (reset state)
+      walletConnected = false;
+      walletAddress = null;
+      document.getElementById('connectBtn').textContent = 'CONNECT WALLET';
+      document.getElementById('connectBtn').classList.remove('connected');
+      document.getElementById('walletCard').style.display = 'none';
+      hideBanner();
+      return;
+    }
+    
+    // Open modal to select wallet
+    document.getElementById('walletModalOverlay').classList.add('show');
+  }
+
+  function closeWalletModal() {
+    document.getElementById('walletModalOverlay').classList.remove('show');
+  }
+
+    async function simulateWalletConnect(walletName) {
+    const statusEl = document.getElementById('status-' + walletName);
+    const originalText = statusEl ? statusEl.textContent : '';
+    if (statusEl) statusEl.textContent = 'Connecting...';
+    
+    try {
+      let addr = '';
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        addr = accounts[0];
+      } else {
+        // Fallback simulation
+        await new Promise(r => setTimeout(r, 800));
+        const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        for (let i = 0; i < 44; i++) addr += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      
+      walletAddress = addr;
+      walletConnected = true;
+      currentChainId = 'robinhood-4663';
+      
+      updateWalletUI();
+      closeWalletModal();
+      
+      showBanner('success', 'âœ“ Connected to Robinhood Chain via ' + walletName + '. Ready to deposit.');
+      document.getElementById('switchNetworkBtn').style.display = 'none';
+      document.getElementById('walletNetwork').className = 'wallet-network';
+      document.getElementById('walletNetwork').textContent = 'Robinhood Chain âœ“';
+      if (statusEl) statusEl.textContent = originalText;
+    } catch (err) {
+      if (statusEl) statusEl.textContent = 'Failed';
+      setTimeout(() => { if (statusEl) statusEl.textContent = originalText; }, 2000);
+    }
+  }
+
+  function updateWalletUI() {
+    const btn = document.getElementById('connectBtn');
+    const short = walletAddress.slice(0, 4) + '...' + walletAddress.slice(-4);
+    btn.textContent = short;
+    btn.classList.add('connected');
+
+    document.getElementById('walletCard').style.display = 'block';
+    document.getElementById('walletAddr').textContent = walletAddress;
+  }
+
+  // ─── SWITCH NETWORK ───────────────────────────────────
+  function switchToBaseMainnet() {
+    // Simulated network switch
+    showBanner('success', '✓ Switched to Robinhood Chain. Ready to simulate deposits.');
+    document.getElementById('switchNetworkBtn').style.display = 'none';
+    document.getElementById('walletNetwork').className = 'wallet-network';
+    document.getElementById('walletNetwork').textContent = 'Robinhood Chain ✓';
+  }
+
+  // ─── DEPOSIT SIMULATION ───────────────────────────────
+  function handleDeposit() {
+    document.getElementById('modalOverlay').classList.add('show');
+    runSimulation();
+  }
+
+  function runSimulation() {
+    const steps = ['step1','step2','step3','step4'];
+    let i = 0;
+    steps.forEach(s => {
+      document.getElementById(s).classList.remove('active','done');
+    });
+
+    function next() {
+      if (i < steps.length) {
+        if (i > 0) document.getElementById(steps[i-1]).classList.remove('active');
+        if (i > 0) document.getElementById(steps[i-1]).classList.add('done');
+        document.getElementById(steps[i]).classList.add('active');
+        i++;
+        setTimeout(next, 900);
+      } else {
+        document.getElementById(steps[steps.length-1]).classList.remove('active');
+        document.getElementById(steps[steps.length-1]).classList.add('done');
+        document.getElementById('modalClose').style.display = 'block';
+      }
+    }
+    next();
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+    document.getElementById('modalClose').style.display = 'none';
+  }
+
+  // ─── BANNER ───────────────────────────────────────────
+  function showBanner(type, msg) {
+    const b = document.getElementById('walletBanner');
+    b.className = type;
+    b.textContent = msg;
+  }
+  function hideBanner() {
+    const b = document.getElementById('walletBanner');
+    b.className = '';
+    b.style.display = 'none';
+  }
+
+  // ─── LIVE COUNTER ANIMATION ───────────────────────────
+  setInterval(() => {
+    const el = document.getElementById('rebalanceCount');
+    if (el) {
+      const n = parseInt(el.textContent.replace(',','')) + Math.floor(Math.random() * 2);
+      el.textContent = n.toLocaleString();
+    }
+  }, 4000);
+
+  updateProjection();
+
+  // â”€â”€ CLEAN URL SCROLL â”€â”€
+  document.querySelectorAll('a[href^="/#"], a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      const id = href.substring(href.indexOf('#') + 1);
+      const target = document.getElementById(id);
+      
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }
+    });
+  });
+
+  if (window.location.hash) {
+    const target = document.getElementById(window.location.hash.substring(1));
+    if (target) {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }, 100);
+    }
+  }
+</script>
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <img src="https://www.vaulta.works/logo.png" alt="Vaulta"/> VAULTA
+      </a>
+      <p>Autonomous Yield Infrastructure on Robinhood Chain. Non-custodial. Audited. AI-powered.</p>
+      <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="https://x.com/vaultaworks" class="team-link" target="_blank">Twitter/X</a>
+        <a href="https://github.com/vaultaworks/vaulta" class="team-link" target="_blank">GitHub</a>
+      </div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>PROTOCOL</h4>
+        <a href="#vaults">Vaults</a>
+        <a href="#ai">AI Engine</a>
+        <a href="#security">Security</a>
+        <a href="#roadmap">Roadmap</a>
+      </div>
+      <div class="footer-col">
+        <h4>RESOURCES</h4>
+        <a href="https://www.vaulta.works/docs" target="_blank">Documentation</a>
+        <a href="https://www.vaulta.works/audit" target="_blank">Audit Report</a>
+        <a href="https://github.com/vaultaworks/vaulta" target="_blank">GitHub</a>
+        <a href="https://solscan.io" target="_blank">Solscan Explorer</a>
+      </div>
+      <div class="footer-col">
+        <h4>LEGAL</h4>
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/risk">Risk Disclosure</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Vaulta Protocol · MIT License · Built on Robinhood Chain</span>
+    <div class="footer-legal">
+      <a href="/terms">Terms</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/risk">Risk Disclosure</a>
+    </div>
+  </div>
+</footer>
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.vault-card, .ai-card, .step, .team-card, .sec-card, .rm-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+
+  // â”€â”€ CLEAN URL SCROLL â”€â”€
+  document.querySelectorAll('a[href^="/#"], a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      const id = href.substring(href.indexOf('#') + 1);
+      const target = document.getElementById(id);
+      
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }
+    });
+  });
+
+  if (window.location.hash) {
+    const target = document.getElementById(window.location.hash.substring(1));
+    if (target) {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+      }, 100);
+    }
+  }
+</script>
+</body>
+</html>
+
+
+
