@@ -1,0 +1,10 @@
+out/
+cache/
+broadcast/*/dry-run/
+broadcast/*/*/dry-run/
+foundry-pp/
+.env
+.env.mainnet
+.env.testnet
+*.key
+lib/
